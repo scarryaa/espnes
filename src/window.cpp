@@ -24,6 +24,8 @@ bool Window::poll_events()
             return true;
         }
     }
+
+    return false;
 }
 
 void Window::render()
