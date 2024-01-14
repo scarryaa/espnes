@@ -1,6 +1,6 @@
 #include "../include/emulator.hpp"
 
-Emulator::Emulator() : ppu(), cpu(), apu(), window(), cartridge(), memory(&ppu, &apu, &cartridge), quit(false), paused(false)
+Emulator::Emulator() : ppu(), apu(), window(), cartridge(), memory(&ppu, &apu, &cartridge), cpu(&memory), quit(false), paused(false)
 {
 }
 

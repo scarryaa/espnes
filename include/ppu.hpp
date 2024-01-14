@@ -2,6 +2,7 @@
 #define PPU_HPP
 
 #include <cstdint>
+#include <iostream>
 
 class PPU
 {
@@ -17,6 +18,16 @@ private:
     uint8_t *vram;
     uint8_t *oam;
     uint8_t *palette;
+
+    uint8_t control;
+    uint8_t mask;
+    uint8_t status;
+    uint8_t oam_address;
+    uint8_t oam_data;
+    uint8_t scroll;
+    uint8_t address;
+    uint8_t data;
+    uint8_t oam_dma;
 };
 
 #endif

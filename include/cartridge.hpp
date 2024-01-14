@@ -13,6 +13,8 @@ public:
     void write(uint16_t address, uint8_t value);
 
 private:
+    uint8_t *rom;
+    uint8_t *ram;
 };
 
-#endif // CARTRIDGE_HPP
+#endif

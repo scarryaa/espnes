@@ -3,7 +3,7 @@
 int main(int argv, char **args)
 {
     Emulator emulator;
-    emulator.load_rom("../roms/official.nes");
+    emulator.load_rom("../roms/nestest.nes");
     emulator.run();
 
     return 1;
