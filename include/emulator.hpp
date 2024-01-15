@@ -24,7 +24,12 @@ public:
     void set_PC_to_reset_vector();
     void load_rom(const std::string &romPath);
     void run();
+    void step();
+    void pause();
+    void reset();
+    bool is_paused();
     uint16_t get_PC();
+    CPU *get_CPU();
     Disassembler get_disassembler();
 
 private:

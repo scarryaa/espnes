@@ -21,6 +21,7 @@ public:
     int run();
     void set_interrupt(InterruptType type);
     uint8_t fetch_opcode();
+    void reset();
 
     // Getters
     uint16_t get_PC();

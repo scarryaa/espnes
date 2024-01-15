@@ -171,6 +171,19 @@ CPU::~CPU()
 {
 }
 
+void CPU::reset()
+{
+    PC = memory->read(RESET_VECTOR) | (memory->read(RESET_VECTOR + 1) << 8);
+    SP = 0xFD;
+    A = 0;
+    X = 0;
+    Y = 0;
+    P = 0x24;
+    interrupt = InterruptType::NONE;
+    cycles = 0;
+    total_cycles = 0;
+}
+
 int CPU::get_cycles()
 {
     return cycles;

@@ -20,6 +20,8 @@ Disassembler::Instruction Disassembler::disassemble(uint16_t address)
     Instruction result;
     result.address = address;
     result.opcode = opcode;
+    result.operand1 = memory->read(address + 1);
+    result.operand2 = memory->read(address + 2);
     result.mnemonic = instruction.mnemonic;
     result.addressingMode = instruction.addressingMode;
 

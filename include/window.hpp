@@ -21,13 +21,14 @@ public:
     bool poll_events();
     void render(Emulator *emulator);
     void post_render(uint8_t *frame_buffer);
-    void render_menu_bar();
-    void render_disassembly(Disassembler disassembler, uint16_t address);
+    void render_menu_bar(Emulator &emulator);
+    void render_disassembly(Emulator *emulator);
 
 private:
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Texture *texture;
+    bool show_disassembly;
 };
 
 #endif

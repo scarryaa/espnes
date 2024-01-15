@@ -51,32 +51,178 @@ bool Window::poll_events()
     return false;
 }
 
-void Window::render_disassembly(Disassembler disassembler, uint16_t address)
+void Window::render_disassembly(Emulator *emulator)
 {
-    Disassembler::Instruction instruction = disassembler.disassemble(address);
+    CPU *cpu = emulator->get_CPU(); // Get the CPU from the emulator
+    Disassembler disassembler = emulator->get_disassembler();
+    uint16_t pc = cpu->get_PC();     // Get the current PC from the CPU
+    uint16_t startAddress = pc - 10; // Start disassembling a few instructions before the PC for context
+
     ImGui::Begin("Disassembler");
 
-    ImGui::Columns(3, "disassembler_columns", false);
+    // Flags (highlighted if set NVUBDIZC)
+    if (cpu->get_N())
+    {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "N");
+    }
+    else
+    {
+        ImGui::Text("N");
+    }
+    ImGui::SameLine();
 
-    ImGui::Text("Address");
-    ImGui::NextColumn();
+    if (cpu->get_V())
+    {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "V");
+    }
+    else
+    {
+        ImGui::Text("V");
+    }
+    ImGui::SameLine();
 
-    ImGui::Text("Opcode");
-    ImGui::NextColumn();
+    if (cpu->get_U())
+    {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "U");
+    }
+    else
+    {
+        ImGui::Text("U");
+    }
+    ImGui::SameLine();
 
-    ImGui::Text("Instruction");
-    ImGui::NextColumn();
+    if (cpu->get_B())
+    {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "B");
+    }
+    else
+    {
+        ImGui::Text("B");
+    }
+    ImGui::SameLine();
 
-    ImGui::Separator();
+    if (cpu->get_D())
+    {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "D");
+    }
+    else
+    {
+        ImGui::Text("D");
+    }
+    ImGui::SameLine();
+
+    if (cpu->get_I())
+    {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "I");
+    }
+    else
+    {
+        ImGui::Text("I");
+    }
+    ImGui::SameLine();
+
+    if (cpu->get_Z())
+    {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Z");
+    }
+    else
+    {
+        ImGui::Text("Z");
+    }
+    ImGui::SameLine();
+
+    if (cpu->get_C())
+    {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "C");
+    }
+    else
+    {
+        ImGui::Text("C");
+    }
+
+    // Registers
+    // A
+    ImGui::Text("A: %02X", cpu->get_A());
+    ImGui::SameLine();
+
+    // X
+    ImGui::Text("X: %02X", cpu->get_X());
+    ImGui::SameLine();
+
+    // Y
+    ImGui::Text("Y: %02X", cpu->get_Y());
+    ImGui::SameLine();
+
+    // SP
+    ImGui::Text("SP: %02X", cpu->get_SP());
+
+    // PC
+    ImGui::Text("PC: %04X", cpu->get_PC());
+    ImGui::SameLine();
+
+    // P
+    ImGui::Text("P: %02X", cpu->get_P());
+
+    // Buttons
+    if (ImGui::Button("Step"))
+    {
+        emulator->step();
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Reset"))
+    {
+        emulator->reset();
+    }
+
+    ImGui::SameLine();
+
+    if (emulator->is_paused())
+    {
+        if (ImGui::Button("Resume"))
+        {
+            emulator->pause();
+        }
+    }
+    else
+    {
+        if (ImGui::Button("Pause"))
+        {
+            emulator->pause();
+        }
+    }
+
+    ImGui::Columns(5, "disassembler_columns", false);
 
     for (int i = 0; i < 20; i++)
     {
-        ImGui::Text("0x%04X", instruction.address);
+        uint16_t address = startAddress + i;
+        Disassembler::Instruction instruction = disassembler.disassemble(address);
+        if (address == pc)
+        {
+            // Highlight the current PC
+            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "%04X", instruction.address);
+        }
+        else
+        {
+            ImGui::Text("%04X", instruction.address);
+        }
         ImGui::NextColumn();
 
-        ImGui::Text("0x%02X", instruction.opcode);
+        // Opcode
+        ImGui::Text("%02X", instruction.opcode);
         ImGui::NextColumn();
 
+        // Op 1
+        ImGui::Text("%02X", instruction.operand1);
+        ImGui::NextColumn();
+
+        // Op 2
+        ImGui::Text("%02X", instruction.operand2);
+        ImGui::NextColumn();
+
+        // Mnemonic
         ImGui::Text("%s", instruction.mnemonic);
         ImGui::NextColumn();
     }
@@ -90,11 +236,16 @@ void Window::render(Emulator *emulator)
     ImGui_ImplSDL2_NewFrame(this->window);
     ImGui::NewFrame();
 
-    this->render_menu_bar();
-    this->render_disassembly(emulator->get_disassembler(), emulator->get_PC());
+    this->render_menu_bar(*emulator);
+
+    CPU *cpu = emulator->get_CPU();
+    if (this->show_disassembly)
+    {
+        this->render_disassembly(emulator);
+    }
 }
 
-void Window::render_menu_bar()
+void Window::render_menu_bar(Emulator &emulator)
 {
     if (ImGui::BeginMainMenuBar())
     {
@@ -108,14 +259,13 @@ void Window::render_menu_bar()
         }
         if (ImGui::BeginMenu("Debug"))
         {
-            if (ImGui::MenuItem("Pause"))
+            if (ImGui::MenuItem("Disassembly"))
             {
-                std::cout << "Pause" << std::endl;
+                // Toggle the disassembly window
+                this->show_disassembly = !this->show_disassembly;
+                ImGui::Checkbox("Show Disassembly", &this->show_disassembly);
             }
-            if (ImGui::MenuItem("Resume"))
-            {
-                std::cout << "Resume" << std::endl;
-            }
+
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();

@@ -21,6 +21,31 @@ PPU::~PPU()
     delete[] palette;
 }
 
+void PPU::reset()
+{
+    this->cycles = 0;
+    this->scanline = 0;
+    this->frame = 0;
+    this->total_cycles = 0;
+    this->control = 0;
+    this->mask = 0;
+    this->status = 0;
+    this->oam_address = 0;
+    this->oam_data = 0;
+    this->scroll_x = 0;
+    this->scroll_y = 0;
+    this->address = 0;
+    this->data = 0;
+    this->oam_dma = 0;
+    this->NMI_occurred = 0;
+
+    // Clear frame buffer
+    for (int i = 0; i < XRES * YRES * COLOR_DEPTH; i++)
+    {
+        frame_buffer[i] = 0;
+    }
+}
+
 void PPU::set_cpu(CPU &cpu)
 {
     this->cpu = &cpu;

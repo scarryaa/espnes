@@ -14,6 +14,33 @@ uint16_t Emulator::get_PC()
     return cpu.get_PC();
 }
 
+CPU *Emulator::get_CPU()
+{
+    return &cpu;
+}
+
+bool Emulator::is_paused()
+{
+    return paused;
+}
+
+void Emulator::pause()
+{
+    paused = !paused;
+}
+
+void Emulator::step()
+{
+    cpu.run();
+    ppu.step(3);
+}
+
+void Emulator::reset()
+{
+    cpu.reset();
+    ppu.reset();
+}
+
 Disassembler Emulator::get_disassembler()
 {
     return disassembler;

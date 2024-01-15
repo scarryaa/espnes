@@ -24,6 +24,7 @@ public:
     uint8_t *get_frame_buffer();
     void set_interrupt_callback(InterruptCallback callback);
     void set_cpu(CPU &cpu);
+    void reset();
 
 private:
     InterruptCallback interruptCallback;

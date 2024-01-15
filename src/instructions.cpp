@@ -1981,6 +1981,7 @@ uint8_t Instructions::lda_abs(CPU *cpu, Memory *memory)
     cpu->set_A(val);
 
     // Set flags
+    std::cout << "A: " << std::hex << (int)cpu->get_A() << std::endl;
     cpu->set_Z(cpu->get_A() == 0);
     cpu->set_N(cpu->get_A() & 0x80);
 
