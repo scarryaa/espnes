@@ -6,6 +6,7 @@
 #include "../include/memory.hpp"
 #include "../include/instructions.hpp"
 #include "../include/interrupt_type.hpp"
+#include "../include/cpu_helpers.hpp"
 
 class Interrupt;
 

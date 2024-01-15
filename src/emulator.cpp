@@ -14,7 +14,7 @@ void Emulator::load_rom(const std::string &romPath)
     FILE *rom = fopen(romPath.c_str(), "rb");
     if (rom == NULL)
     {
-        std::cout << "Error: Unable to open ROM file" << std::endl;
+
         exit(1);
     }
 
@@ -24,7 +24,7 @@ void Emulator::load_rom(const std::string &romPath)
     // Check if ROM is valid (NES<EOF>)
     if (header[0] != 0x4E || header[1] != 0x45 || header[2] != 0x53 || header[3] != 0x1A)
     {
-        std::cout << "Error: Invalid ROM file" << std::endl;
+        Debug::debug_print("Error: Invalid ROM\n");
         exit(1);
     }
 
@@ -36,7 +36,7 @@ void Emulator::load_rom(const std::string &romPath)
     // Check if ROM is supported
     if (mapper != 0)
     {
-        std::cout << "Error: Unsupported mapper" << std::endl;
+        Debug::debug_print("Error: Unsupported mapper\n");
         exit(1);
     }
 
@@ -60,6 +60,8 @@ void Emulator::load_rom(const std::string &romPath)
 
 void Emulator::set_PC_to_reset_vector()
 {
+    // print reset vector in form 0x0000
+    Debug::debug_print("Reset vector: 0x%04X", memory.read(CPU::RESET_VECTOR) | (memory.read(CPU::RESET_VECTOR + 1) << 8));
     cpu.set_PC(memory.read(CPU::RESET_VECTOR) | (memory.read(CPU::RESET_VECTOR + 1) << 8));
 }
 

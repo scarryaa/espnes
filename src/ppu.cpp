@@ -57,7 +57,7 @@ uint8_t PPU::read(uint16_t address)
         break;
     }
 
-    std::cout << "Error: Invalid PPU register" << std::endl;
+    Debug::debug_print("Unknown PPU read: " + std::to_string(address));
     return 0;
 }
 

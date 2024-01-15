@@ -16,49 +16,39 @@ Memory::~Memory()
 
 uint8_t Memory::read(uint16_t address)
 {
-    if (address == 0xf7)
-    {
-        std::cout << "Read from 0xf7" << std::endl;
-    }
     // Read from stack
     if (address >= 0x100 && address <= 0x1FF)
     {
-        std::cout << "Stack read: " << std::hex << address << std::endl;
         return stack[address - 0x100];
     }
     // Read from RAM
     else if (address >= 0x0000 && address < 0x2000)
     {
-        std::cout << "RAM read: " << std::hex << address << std::endl;
         return ram[address % 0x0800];
     }
     // Read from PPU
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        std::cout << "PPU read: " << std::hex << address << std::endl;
         return ppu->read(address);
     }
     // Read from APU
     else if (address >= 0x4000 && address <= 0x4017)
     {
-        std::cout << "APU read: " << std::hex << address << std::endl;
         return apu->read(address);
     }
     // Unknown
     else if (address >= 0x4018 && address <= 0x401F)
     {
-        std::cout << "Unknown memory read: " << std::hex << address << std::endl;
         return 0;
     }
     // Read from cartridge
     else if (address >= 0x4020 && address <= 0xFFFF)
     {
-        std::cout << "Cartridge read: " << std::hex << address << std::endl;
         return cartridge->read(address);
     }
     else
     {
-        std::cout << "Unknown memory read: " << std::hex << address << std::endl;
+        Debug::debug_print("Unknown memory read: " + std::to_string(address));
     }
 
     return 0;
@@ -98,7 +88,7 @@ void Memory::write(uint16_t address, uint8_t value)
     }
     else
     {
-        std::cout << "Unknown memory write: " << std::hex << address << std::endl;
+        Debug::debug_print("Unknown memory write: " + std::to_string(address));
     }
 }
 

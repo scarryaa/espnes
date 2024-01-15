@@ -6,6 +6,8 @@
 #include "ppu.hpp"
 #include "apu.hpp"
 #include "cartridge.hpp"
+#include "debug/debug.hpp"
+#include <string>
 
 class Memory
 {

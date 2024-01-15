@@ -3,6 +3,8 @@
 
 #include <cstdint>
 #include <iostream>
+#include "../include/debug/debug.hpp"
+#include <string>
 
 class PPU
 {

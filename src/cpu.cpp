@@ -62,7 +62,6 @@ CPU::CPU(Memory *memory) : memory(memory)
     ins_table[0x4E] = Instructions::lsr_abs;
     ins_table[0x50] = Instructions::bvc_rel;
     ins_table[0x51] = Instructions::eor_ind_y;
-    // ins_table[0x52] = Instructions::eor_zpg_x;
     ins_table[0x55] = Instructions::eor_zpg_x;
     ins_table[0x56] = Instructions::lsr_zpg_x;
     ins_table[0x58] = Instructions::cli_impl;
@@ -193,16 +192,19 @@ int CPU::run()
 
     // Decode opcode
     Instructions::InstructionFunction ins = ins_table[opcode];
+
+    // Check for illegal opcodes
+    CPUHelpers::check_for_illegal_opcode(opcode);
+
+    // Log opcode
+    CPUHelpers::log_cpu_status(this, memory, opcode);
+
     if (ins != nullptr)
     {
         uint8_t ins_cycles = ins(this, memory);
         long cycles = ins_cycles + irq_cycles;
         total_cycles += cycles;
         return cycles;
-    }
-    else
-    {
-        printf("Unknown opcode: %02X\n", opcode);
     }
 
     return 0;

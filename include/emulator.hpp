@@ -6,6 +6,7 @@
 #include "cpu.hpp"
 #include "memory.hpp"
 #include "cartridge.hpp"
+#include "debug/debug.hpp"
 #include "apu.hpp"
 #include "ppu.hpp"
 #include <chrono>
