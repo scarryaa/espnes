@@ -187,6 +187,9 @@ int CPU::run()
         this->interrupt = InterruptType::NONE;
     }
 
+    // Log opcode
+    CPUHelpers::log_cpu_status(this, memory, memory->read(PC));
+
     // Fetch opcode
     uint8_t opcode = fetch_opcode();
 
@@ -195,9 +198,6 @@ int CPU::run()
 
     // Check for illegal opcodes
     CPUHelpers::check_for_illegal_opcode(opcode);
-
-    // Log opcode
-    CPUHelpers::log_cpu_status(this, memory, opcode);
 
     if (ins != nullptr)
     {

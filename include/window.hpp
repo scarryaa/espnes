@@ -10,11 +10,12 @@ public:
     ~Window();
 
     bool poll_events();
-    void render();
+    void render(uint8_t *frame_buffer);
 
 private:
     SDL_Window *window;
     SDL_Renderer *renderer;
+    SDL_Texture *texture;
 };
 
 #endif

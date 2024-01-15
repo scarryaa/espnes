@@ -9,8 +9,10 @@
 #include "debug/debug.hpp"
 #include "apu.hpp"
 #include "ppu.hpp"
+#include <functional>
 #include <chrono>
 #include <iostream>
+#include <vector>
 
 class Emulator
 {
@@ -32,6 +34,7 @@ private:
 
     bool quit;
     bool paused;
+    uint16_t reset_vector;
 };
 
 #endif

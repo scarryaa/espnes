@@ -53,7 +53,6 @@ void CPUHelpers::log_cpu_status(CPU *cpu, Memory *memory, uint8_t opcode)
     log_file << "X:" << std::setfill('0') << std::setw(2) << std::hex << (int)cpu->get_X() << " ";
     log_file << "Y:" << std::setfill('0') << std::setw(2) << std::hex << (int)cpu->get_Y() << " ";
     log_file << "P:" << std::setfill('0') << std::setw(8) << std::hex << (int)cpu->get_P() << " ";
-    log_file << "(" << std::setfill('0') << std::setw(2) << std::hex << (int)opcode << ") ";
     log_file << "Opcode:" << std::setfill('0') << std::setw(2) << std::hex << (int)opcode << std::endl;
     log_file.close();
 }

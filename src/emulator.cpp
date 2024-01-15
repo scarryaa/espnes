@@ -1,7 +1,8 @@
 #include "../include/emulator.hpp"
 
-Emulator::Emulator() : ppu(), apu(), window(), cartridge(), memory(&ppu, &apu, &cartridge), cpu(&memory), quit(false), paused(false)
+Emulator::Emulator() : cpu(&memory), ppu(), apu(), window(), cartridge(), memory(&ppu, &apu, &cartridge), quit(false), paused(false)
 {
+    ppu.set_cpu(cpu);
 }
 
 Emulator::~Emulator()
@@ -10,59 +11,59 @@ Emulator::~Emulator()
 
 void Emulator::load_rom(const std::string &romPath)
 {
-    // TODO move this to a separate class
-    FILE *rom = fopen(romPath.c_str(), "rb");
-    if (rom == NULL)
+    // Open the file
+    std::ifstream rom(romPath, std::ios::binary);
+    if (!rom)
     {
-
-        exit(1);
+        throw std::runtime_error("Failed to open ROM file");
     }
 
-    unsigned char header[16];
-    fread(header, sizeof(unsigned char), 16, rom);
+    // Read the header
+    std::vector<uint8_t> header(16);
+    rom.read(reinterpret_cast<char *>(header.data()), header.size());
 
     // Check if ROM is valid (NES<EOF>)
     if (header[0] != 0x4E || header[1] != 0x45 || header[2] != 0x53 || header[3] != 0x1A)
     {
-        Debug::debug_print("Error: Invalid ROM\n");
-        exit(1);
+        throw std::runtime_error("Invalid ROM");
     }
 
     // Get ROM info
     int prg_rom_size = header[4] * 16384;
     int chr_rom_size = header[5] * 8192;
-    int mapper = ((header[6] & 0xF0) >> 4) | (header[7] & 0xF0);
+    int mapper = ((header[6] >> 4) | (header[7] & 0xF0));
 
     // Check if ROM is supported
     if (mapper != 0)
     {
-        Debug::debug_print("Error: Unsupported mapper\n");
-        exit(1);
+        throw std::runtime_error("Unsupported mapper");
     }
 
     // Read PRG ROM
-    unsigned char *prg_rom = (unsigned char *)malloc(prg_rom_size);
-    fread(prg_rom, sizeof(unsigned char), prg_rom_size, rom);
+    std::vector<uint8_t> prg_rom(prg_rom_size);
+    rom.read(reinterpret_cast<char *>(prg_rom.data()), prg_rom.size());
+
+    // Get the reset vector
+    uint16_t reset_vector = prg_rom[prg_rom_size - 4] | (prg_rom[prg_rom_size - 3] << 8);
+
+    // Load reset vector into memory
+    Debug::debug_print("Reset vector: 0x%04X", reset_vector);
+    this->reset_vector = reset_vector;
 
     // Read CHR ROM
-    unsigned char *chr_rom = (unsigned char *)malloc(chr_rom_size);
-    fread(chr_rom, sizeof(unsigned char), chr_rom_size, rom);
+    std::vector<uint8_t> chr_rom(chr_rom_size);
+    rom.read(reinterpret_cast<char *>(chr_rom.data()), chr_rom.size());
 
-    // Load PRG ROM into CPU memory
-    memory.load(prg_rom, prg_rom_size);
-
-    // Load PGR ROM into cartridge memory
-    cartridge.load(prg_rom, prg_rom_size);
+    // Load PRG ROM into cartridge memory
+    cartridge.load(prg_rom.data(), prg_rom.size());
 
     // Load CHR ROM into PPU memory
-    ppu.load(chr_rom, chr_rom_size);
+    ppu.load(chr_rom.data(), chr_rom.size());
 }
 
 void Emulator::set_PC_to_reset_vector()
 {
-    // print reset vector in form 0x0000
-    Debug::debug_print("Reset vector: 0x%04X", memory.read(CPU::RESET_VECTOR) | (memory.read(CPU::RESET_VECTOR + 1) << 8));
-    cpu.set_PC(memory.read(CPU::RESET_VECTOR) | (memory.read(CPU::RESET_VECTOR + 1) << 8));
+    cpu.set_PC(reset_vector);
 }
 
 void Emulator::run()
@@ -79,15 +80,18 @@ void Emulator::run()
 
         if (!paused)
         {
-            while (cycles_to_run > 0)
+            if (cycles_to_run > 0)
             {
                 // run for 1 cycle
                 int cycles = cpu.run();
                 cycles_to_run -= cycles;
+
+                // run ppu
+                ppu.step(cycles * 3);
             }
         }
 
         // render graphics
-        window.render();
+        window.render(ppu.get_frame_buffer());
     }
 }

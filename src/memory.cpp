@@ -82,10 +82,10 @@ void Memory::write(uint16_t address, uint8_t value)
         return;
     }
     // Write to cartridge
-    else if (address >= 0x4020 && address <= 0xFFFF)
-    {
-        cartridge->write(address, value);
-    }
+    // else if (address >= 0x4020 && address <= 0xFFFF)
+    // {
+    //     cartridge->write(address, value);
+    // }
     else
     {
         Debug::debug_print("Unknown memory write: " + std::to_string(address));
