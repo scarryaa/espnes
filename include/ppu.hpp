@@ -52,7 +52,7 @@ private:
 
     static const int XRES = 256;
     static const int YRES = 240;
-    static const int COLOR_DEPTH = 3;
+    static const int COLOR_DEPTH = 2;
     uint8_t frame_buffer[XRES * YRES * COLOR_DEPTH];
     static const int SCANLINE_CYCLES = 341;
     static const int SCANLINES = 261;

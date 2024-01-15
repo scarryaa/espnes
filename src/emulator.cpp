@@ -78,6 +78,7 @@ void Emulator::run()
         cycles_to_run = (elapsed * CPU::CLOCK_SPEED / 1000);
         quit = window.poll_events();
 
+        window.render(ppu.get_frame_buffer());
         if (!paused)
         {
             if (cycles_to_run > 0)
@@ -92,6 +93,6 @@ void Emulator::run()
         }
 
         // render graphics
-        window.render(ppu.get_frame_buffer());
+        window.post_render(ppu.get_frame_buffer());
     }
 }
