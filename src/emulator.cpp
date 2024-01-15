@@ -46,6 +46,33 @@ Disassembler Emulator::get_disassembler()
     return disassembler;
 }
 
+void Emulator::set_breakpoint(uint16_t address)
+{
+    Debug::debug_print("Setting breakpoint at 0x%04X", address);
+    breakpoints.insert(address);
+}
+
+void Emulator::clear_breakpoint(uint16_t address)
+{
+    Debug::debug_print("Clearing breakpoint at 0x%04X", address);
+    breakpoints.erase(address);
+}
+
+void Emulator::clear_all_breakpoints()
+{
+    breakpoints.clear();
+}
+
+bool Emulator::is_breakpoint(uint16_t address)
+{
+    return breakpoints.find(address) != breakpoints.end();
+}
+
+std::set<uint16_t> Emulator::get_breakpoints()
+{
+    return breakpoints;
+}
+
 void Emulator::load_rom(const std::string &romPath)
 {
     // Open the file
@@ -121,15 +148,19 @@ void Emulator::run()
         quit = window.poll_events();
 
         window.render(this);
+
         if (!paused)
         {
             if (cycles_to_run > 0)
             {
-                // run for 1 cycle
                 int cycles = cpu.run();
                 cycles_to_run -= cycles;
 
-                // run ppu
+                if (is_breakpoint(cpu.get_PC()))
+                {
+                    pause(); // pause the emulator at the breakpoint
+                }
+
                 ppu.step(cycles * 3);
             }
         }

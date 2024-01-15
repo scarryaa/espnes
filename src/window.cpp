@@ -193,11 +193,26 @@ void Window::render_disassembly(Emulator *emulator)
         }
     }
 
-    ImGui::Columns(5, "disassembler_columns", false);
-
+    ImGui::Columns(6, "disassembler_columns", false);
+    ImGui::SetColumnWidth(0, 15.0f);
+    ImGui::SetColumnWidth(1, 50.0f);
     for (int i = 0; i < 20; i++)
     {
         uint16_t address = startAddress + i;
+
+        // Check if the address is a breakpoint
+        // if so, draw a red circle
+        if (emulator->is_breakpoint(address))
+        {
+            ImGui::SetCursorPosX(5.0f);
+            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "O");
+        }
+        else
+        {
+            ImGui::Text(" ");
+        }
+        ImGui::NextColumn();
+
         Disassembler::Instruction instruction = disassembler.disassemble(address);
         if (address == pc)
         {
@@ -208,6 +223,21 @@ void Window::render_disassembly(Emulator *emulator)
         {
             ImGui::Text("%04X", instruction.address);
         }
+
+        // Check for double click to set a breakpoint
+        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+        {
+            // Toggle the breakpoint
+            if (emulator->is_breakpoint(address))
+            {
+                emulator->clear_breakpoint(address);
+            }
+            else
+            {
+                emulator->set_breakpoint(address);
+            }
+        }
+
         ImGui::NextColumn();
 
         // Opcode
@@ -215,11 +245,11 @@ void Window::render_disassembly(Emulator *emulator)
         ImGui::NextColumn();
 
         // Op 1
-        ImGui::Text("%02X", instruction.operand1);
+        ImGui::Text(instruction.bytes[0] == ' ' ? " " : "%02X", instruction.bytes[0]);
         ImGui::NextColumn();
 
         // Op 2
-        ImGui::Text("%02X", instruction.operand2);
+        ImGui::Text(instruction.bytes[1] == ' ' ? " " : "%02X", instruction.bytes[1]);
         ImGui::NextColumn();
 
         // Mnemonic

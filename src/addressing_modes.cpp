@@ -142,12 +142,12 @@ uint16_t AddressingModes::indirect_y(CPU *cpu, Memory *memory, bool *page_crosse
 uint8_t AddressingModes::relative(CPU *cpu, Memory *memory)
 {
     // Get relative address
-    uint8_t addr = cpu->fetch_opcode();
+    int8_t offset = static_cast<int8_t>(cpu->fetch_opcode());
     // Check if negative
-    if (addr & 0x80)
+    if (offset & 0x80)
     {
         // Sign extend
-        addr |= 0xFF00;
+        offset |= 0xFF00;
     }
-    return addr;
+    return offset;
 }

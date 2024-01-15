@@ -36,6 +36,7 @@ Disassembler::Instruction Disassembler::disassemble(uint16_t address)
     case AddressingMode::INDIRECT_Y:
     case AddressingMode::RELATIVE:
         result.bytes[0] = memory->read(address + 1);
+        result.bytes[1] = ' ';
         break;
     case AddressingMode::ABSOLUTE:
     case AddressingMode::ABSOLUTE_X:
@@ -46,10 +47,10 @@ Disassembler::Instruction Disassembler::disassemble(uint16_t address)
         break;
     case AddressingMode::ACCUMULATOR:
     case AddressingMode::IMPLIED:
-        // No additional bytes to read
-        break;
-
     default:
+        result.bytes[0] = ' ';
+        result.bytes[1] = ' ';
+        // No additional bytes to read
         break;
     }
 

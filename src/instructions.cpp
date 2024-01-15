@@ -1981,7 +1981,6 @@ uint8_t Instructions::lda_abs(CPU *cpu, Memory *memory)
     cpu->set_A(val);
 
     // Set flags
-    std::cout << "A: " << std::hex << (int)cpu->get_A() << std::endl;
     cpu->set_Z(cpu->get_A() == 0);
     cpu->set_N(cpu->get_A() & 0x80);
 
@@ -2875,27 +2874,29 @@ uint8_t Instructions::inc_abs(CPU *cpu, Memory *memory)
 // 0xF0
 uint8_t Instructions::beq_rel(CPU *cpu, Memory *memory)
 {
-    // Get relative address
-    uint16_t addr = AddressingModes::relative(cpu, memory);
+    // Get relative address (offset)
+    int8_t offset = AddressingModes::relative(cpu, memory);
+
+    // Base cycles (no branch taken)
+    uint8_t cycles = 2;
 
     // Check if zero flag is set
     if (cpu->get_Z())
     {
-        // Branch
-        cpu->set_PC(addr);
+        uint16_t oldPC = cpu->get_PC();
+        cpu->set_PC(oldPC + offset);
 
-        // Add cycles if page boundary is crossed
-        if ((cpu->get_PC() & 0xFF00) != (addr & 0xFF00))
+        // Add cycle for taking branch
+        cycles++;
+
+        // Add additional cycle if page boundary is crossed
+        if ((oldPC & 0xFF00) != (cpu->get_PC() & 0xFF00))
         {
-            return 4;
-        }
-        else
-        {
-            return 3;
+            cycles++;
         }
     }
 
-    return 2;
+    return cycles;
 }
 
 // 0xF1

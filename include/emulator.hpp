@@ -14,6 +14,7 @@
 #include <chrono>
 #include <iostream>
 #include <vector>
+#include <set>
 
 class Emulator
 {
@@ -28,11 +29,18 @@ public:
     void pause();
     void reset();
     bool is_paused();
+    void set_breakpoint(uint16_t address);
+    void clear_breakpoint(uint16_t address);
+    void clear_all_breakpoints();
+    bool is_breakpoint(uint16_t address);
+    std::set<uint16_t> get_breakpoints();
+
     uint16_t get_PC();
     CPU *get_CPU();
     Disassembler get_disassembler();
 
 private:
+    std::set<uint16_t> breakpoints = {};
     Window window;
     CPU cpu;
     Cartridge cartridge;
