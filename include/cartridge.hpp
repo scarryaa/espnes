@@ -9,6 +9,7 @@ public:
     Cartridge();
     ~Cartridge();
 
+    void load(uint8_t *rom, uint32_t size);
     uint8_t read(uint16_t address);
     void write(uint16_t address, uint8_t value);
 

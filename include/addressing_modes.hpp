@@ -3,19 +3,23 @@
 
 #include <cstdint>
 
+class CPU;
+class Memory;
+
 class AddressingModes
 {
 public:
-    static uint8_t immediate();
-    static uint8_t zero_page();
-    static uint8_t zero_page_x();
-    static uint8_t zero_page_y();
-    static uint8_t absolute();
-    static uint8_t absolute_x();
-    static uint8_t absolute_y();
-    static uint8_t indirect();
-    static uint8_t indexed_indirect();
-    static uint8_t indirect_indexed();
+    static uint16_t absolute(CPU *cpu, Memory *memory);
+    static uint16_t absolute_x(CPU *cpu, Memory *memory, bool *page_crossed);
+    static uint16_t absolute_y(CPU *cpu, Memory *memory, bool *page_crossed);
+    static uint8_t immediate(CPU *cpu, Memory *memory);
+    static uint16_t indirect(CPU *cpu, Memory *memory);
+    static uint16_t indirect_x(CPU *cpu, Memory *memory);
+    static uint16_t indirect_y(CPU *cpu, Memory *memory, bool *page_crossed);
+    static uint8_t relative(CPU *cpu, Memory *memory);
+    static uint8_t zero_page(CPU *cpu, Memory *memory);
+    static uint8_t zero_page_x(CPU *cpu, Memory *memory);
+    static uint8_t zero_page_y(CPU *cpu, Memory *memory);
 
 private:
 };

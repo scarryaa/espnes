@@ -16,7 +16,7 @@ PPU::~PPU()
 
 uint8_t PPU::read(uint16_t address)
 {
-    uint8_t register_index = address & 8;
+    uint8_t register_index = address & 7;
     switch (register_index)
     {
     case 0:
@@ -63,7 +63,7 @@ uint8_t PPU::read(uint16_t address)
 
 void PPU::write(uint16_t address, uint8_t value)
 {
-    uint8_t register_index = address & 8;
+    uint8_t register_index = address & 7;
     switch (register_index)
     {
     case 0:

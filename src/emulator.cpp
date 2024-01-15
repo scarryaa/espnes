@@ -51,8 +51,16 @@ void Emulator::load_rom(const std::string &romPath)
     // Load PRG ROM into CPU memory
     memory.load(prg_rom, prg_rom_size);
 
+    // Load PGR ROM into cartridge memory
+    cartridge.load(prg_rom, prg_rom_size);
+
     // Load CHR ROM into PPU memory
     ppu.load(chr_rom, chr_rom_size);
+}
+
+void Emulator::set_PC_to_reset_vector()
+{
+    cpu.set_PC(memory.read(CPU::RESET_VECTOR) | (memory.read(CPU::RESET_VECTOR + 1) << 8));
 }
 
 void Emulator::run()

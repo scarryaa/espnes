@@ -35,13 +35,31 @@ public:
     void set_X(uint8_t value);
     void set_Y(uint8_t value);
     void set_P(uint8_t value);
+    void set_Z(bool value);
+    void set_N(bool value);
+    void set_C(bool value);
+    void set_I(bool value);
+    void set_D(bool value);
+    void set_B(bool value);
+    void set_U(bool value);
+    void set_V(bool value);
+
+    // Flags
+    bool get_C();
+    bool get_Z();
+    bool get_I();
+    bool get_D();
+    bool get_B();
+    bool get_U();
+    bool get_V();
+    bool get_N();
 
     // Constants
     static const int CLOCK_SPEED = 1789773;         // 1.789773 MHz
     static const int FLAG_CARRY = 0x01;             // Bit 0
     static const int FLAG_ZERO = 0x02;              // Bit 1
     static const int FLAG_INTERRUPT_DISABLE = 0x04; // Bit 2
-    static const int FLAG_DECIMAL_MODE = 0x08;      // Bit 3
+    static const int FLAG_DECIMAL = 0x08;           // Bit 3
     static const int FLAG_BREAK = 0x10;             // Bit 4
     static const int FLAG_UNUSED = 0x20;            // Bit 5
     static const int FLAG_OVERFLOW = 0x40;          // Bit 6
