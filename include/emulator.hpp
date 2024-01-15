@@ -7,6 +7,7 @@
 #include "memory.hpp"
 #include "cartridge.hpp"
 #include "debug/debug.hpp"
+#include "debug/disassembler.hpp"
 #include "apu.hpp"
 #include "ppu.hpp"
 #include <functional>
@@ -23,6 +24,8 @@ public:
     void set_PC_to_reset_vector();
     void load_rom(const std::string &romPath);
     void run();
+    uint16_t get_PC();
+    Disassembler get_disassembler();
 
 private:
     Window window;
@@ -31,6 +34,7 @@ private:
     Memory memory;
     PPU ppu;
     APU apu;
+    Disassembler disassembler;
 
     bool quit;
     bool paused;

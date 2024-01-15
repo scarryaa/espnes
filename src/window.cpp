@@ -1,4 +1,6 @@
 #include "../include/window.hpp"
+#include "../include/debug/disassembler.hpp"
+#include "../include/emulator.hpp"
 
 Window::Window()
 {
@@ -38,6 +40,8 @@ bool Window::poll_events()
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
+        ImGui_ImplSDL2_ProcessEvent(&event);
+
         if (event.type == SDL_QUIT)
         {
             return true;
@@ -47,13 +51,47 @@ bool Window::poll_events()
     return false;
 }
 
-void Window::render(uint8_t *frame_buffer)
+void Window::render_disassembly(Disassembler disassembler, uint16_t address)
+{
+    Disassembler::Instruction instruction = disassembler.disassemble(address);
+    ImGui::Begin("Disassembler");
+
+    ImGui::Columns(3, "disassembler_columns", false);
+
+    ImGui::Text("Address");
+    ImGui::NextColumn();
+
+    ImGui::Text("Opcode");
+    ImGui::NextColumn();
+
+    ImGui::Text("Instruction");
+    ImGui::NextColumn();
+
+    ImGui::Separator();
+
+    for (int i = 0; i < 20; i++)
+    {
+        ImGui::Text("0x%04X", instruction.address);
+        ImGui::NextColumn();
+
+        ImGui::Text("0x%02X", instruction.opcode);
+        ImGui::NextColumn();
+
+        ImGui::Text("%s", instruction.mnemonic);
+        ImGui::NextColumn();
+    }
+
+    ImGui::End();
+}
+
+void Window::render(Emulator *emulator)
 {
     ImGui_ImplSDLRenderer2_NewFrame();
     ImGui_ImplSDL2_NewFrame(this->window);
     ImGui::NewFrame();
 
     this->render_menu_bar();
+    this->render_disassembly(emulator->get_disassembler(), emulator->get_PC());
 }
 
 void Window::render_menu_bar()
@@ -91,7 +129,8 @@ void Window::post_render(uint8_t *frame_buffer)
 
     ImGui::Render();
     SDL_RenderClear(this->renderer);
-    SDL_UpdateTexture(this->texture, nullptr, frame_buffer, 256 * sizeof(uint32_t));
+    SDL_UpdateTexture(this->texture, nullptr, frame_buffer, 256 * 2);
+    SDL_RenderCopy(this->renderer, this->texture, nullptr, nullptr);
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
     SDL_RenderPresent(this->renderer);
 }

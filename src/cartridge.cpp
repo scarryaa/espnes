@@ -12,7 +12,14 @@ Cartridge::~Cartridge()
 
 uint8_t Cartridge::read(uint16_t address)
 {
-    return rom[address];
+    uint16_t relativeAddress = address - 0x8000; // ROM starts at 0x8000
+    uint16_t bankAddress = (currentBank * BANK_SIZE) + (relativeAddress % BANK_SIZE);
+    return rom[bankAddress];
+}
+
+void Cartridge::switchBank(uint16_t bank)
+{
+    currentBank = bank;
 }
 
 void Cartridge::write(uint16_t address, uint8_t value)

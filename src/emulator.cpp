@@ -1,12 +1,22 @@
 #include "../include/emulator.hpp"
 
-Emulator::Emulator() : cpu(&memory), ppu(), apu(), window(), cartridge(), memory(&ppu, &apu, &cartridge), quit(false), paused(false)
+Emulator::Emulator() : cpu(&memory), ppu(), apu(), window(), cartridge(), memory(&ppu, &apu, &cartridge), disassembler(&cpu, &memory), quit(false), paused(false)
 {
     ppu.set_cpu(cpu);
 }
 
 Emulator::~Emulator()
 {
+}
+
+uint16_t Emulator::get_PC()
+{
+    return cpu.get_PC();
+}
+
+Disassembler Emulator::get_disassembler()
+{
+    return disassembler;
 }
 
 void Emulator::load_rom(const std::string &romPath)
@@ -57,6 +67,11 @@ void Emulator::load_rom(const std::string &romPath)
     // Load PRG ROM into cartridge memory
     cartridge.load(prg_rom.data(), prg_rom.size());
 
+    // print out cartridge
+    // std::string cartridge_data;
+    // Debug::hex_to_string(prg_rom.data(), prg_rom.size(), cartridge_data);
+    // Debug::debug_print("PRG ROM: %s", cartridge_data.c_str());
+
     // Load CHR ROM into PPU memory
     ppu.load(chr_rom.data(), chr_rom.size());
 }
@@ -78,7 +93,7 @@ void Emulator::run()
         cycles_to_run = (elapsed * CPU::CLOCK_SPEED / 1000);
         quit = window.poll_events();
 
-        window.render(ppu.get_frame_buffer());
+        window.render(this);
         if (!paused)
         {
             if (cycles_to_run > 0)

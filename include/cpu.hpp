@@ -7,6 +7,7 @@
 #include "../include/instructions.hpp"
 #include "../include/interrupt_type.hpp"
 #include "../include/cpu_helpers.hpp"
+#include "../include/debug/disassembler.hpp"
 
 class Interrupt;
 

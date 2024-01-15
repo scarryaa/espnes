@@ -43,16 +43,16 @@ void CPUHelpers::check_for_illegal_opcode(uint8_t opcode)
 
 void CPUHelpers::log_cpu_status(CPU *cpu, Memory *memory, uint8_t opcode)
 {
-    // Write to file in the format
-    // PC:0000 SP:00 A:00 X:00 Y:00 P:fffffff (00) Opcode:00
+    // Write to file in the format uppercased hex values with leading zeroes
+    // PC:0000 SP:00 A:00 X:00 Y:00 P:FFFFFFFF Opcode:00
     std::ofstream log_file;
     log_file.open("log.txt", std::ios_base::app);
-    log_file << "PC:" << std::setfill('0') << std::setw(4) << std::hex << cpu->get_PC() << " ";
-    log_file << "SP:" << std::setfill('0') << std::setw(2) << std::hex << (int)cpu->get_SP() << " ";
-    log_file << "A:" << std::setfill('0') << std::setw(2) << std::hex << (int)cpu->get_A() << " ";
-    log_file << "X:" << std::setfill('0') << std::setw(2) << std::hex << (int)cpu->get_X() << " ";
-    log_file << "Y:" << std::setfill('0') << std::setw(2) << std::hex << (int)cpu->get_Y() << " ";
-    log_file << "P:" << std::setfill('0') << std::setw(8) << std::hex << (int)cpu->get_P() << " ";
-    log_file << "Opcode:" << std::setfill('0') << std::setw(2) << std::hex << (int)opcode << std::endl;
+    log_file << "PC:" << std::setfill('0') << std::setw(4) << std::uppercase << std::hex << cpu->get_PC() << " ";
+    log_file << "SP:" << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << (int)cpu->get_SP() << " ";
+    log_file << "A:" << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << (int)cpu->get_A() << " ";
+    log_file << "X:" << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << (int)cpu->get_X() << " ";
+    log_file << "Y:" << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << (int)cpu->get_Y() << " ";
+    log_file << "P:" << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << (int)cpu->get_P() << " ";
+    log_file << "Opcode:" << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << (int)opcode << "\n";
     log_file.close();
 }

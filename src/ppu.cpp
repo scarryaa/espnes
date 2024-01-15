@@ -5,7 +5,13 @@ PPU::PPU() : cycles(0), scanline(0), frame(0), total_cycles(0), control(0), mask
 {
     vram = new uint8_t[0x2000];
     oam = new uint8_t[0x100];
-    palette = new uint8_t[0x20];
+    palette = new uint8_t[0x40];
+
+    // Copy palette data
+    for (int i = 0; i < 0x20; i++)
+    {
+        palette[i] = PaletteLUT_2C04_0001[i];
+    }
 }
 
 PPU::~PPU()
@@ -158,7 +164,7 @@ void PPU::load(uint8_t *rom, uint32_t size)
 {
     for (uint32_t i = 0; i < size; i++)
     {
-        vram[i] = rom[i];
+        chr_rom[i] = rom[i];
     }
 }
 
@@ -208,8 +214,10 @@ void PPU::step(int cycles)
         this->frame++;
     }
 
-    draw_pattern_table(0, 0, 0, this->palette);
-    draw_pattern_table(128, 0, 1, this->palette);
+    // draw_pattern_table(0, 8, 0, this->palette);
+    // draw_pattern_table(128, 8, 1, this->palette);
+    // draw_name_table(0, 8, 0, this->palette);
+    draw_name_table(0, 8, 1, this->palette);
 }
 
 void PPU::draw_pattern_table(int startX, int startY, int table, uint8_t *palette)
@@ -267,7 +275,7 @@ void PPU::draw_name_table(int startX, int startY, int table, const uint8_t *pale
 void PPU::draw_pixel(int x, int y, uint16_t color)
 {
     int index = (y * XRES + x) * COLOR_DEPTH;
-    frame_buffer[index] = (color >> 16) & 0xFF;
-    frame_buffer[index + 1] = (color >> 8) & 0xFF;
-    frame_buffer[index + 2] = color & 0xFF;
+
+    this->frame_buffer[index] = (color >> 0) & 0xFF;     // Lo
+    this->frame_buffer[index + 1] = (color >> 8) & 0xFF; // Hi
 }
