@@ -265,6 +265,33 @@ void Window::render_disassembly(Emulator *emulator)
     ImGui::End();
 }
 
+void Window::render_memory_view(Emulator *emulator)
+{
+    PPU *ppu = emulator->get_PPU();
+    uint8_t *vram = ppu->get_vram();
+
+    ImGui::Begin("VRAM View");
+
+    const int bytes_per_row = 16;
+    int total_rows = 0x2000 / bytes_per_row;
+
+    ImGui::BeginChild("VRAM", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+    for (int row = 0; row < total_rows; ++row)
+    {
+        for (int col = 0; col < bytes_per_row; ++col)
+        {
+            int addr = row * bytes_per_row + col;
+            ImGui::Text("%02X ", vram[addr]);
+            ImGui::SameLine();
+        }
+        ImGui::NewLine();
+    }
+
+    ImGui::EndChild();
+    ImGui::End();
+}
+
 void Window::render(Emulator *emulator)
 {
     ImGui_ImplSDLRenderer2_NewFrame();
@@ -278,6 +305,32 @@ void Window::render(Emulator *emulator)
     {
         this->render_disassembly(emulator);
     }
+
+    this->render_PPU(emulator);
+    this->render_CPU(emulator);
+    this->render_memory_view(emulator);
+}
+
+void Window::render_PPU(Emulator *emulator)
+{
+    PPU *ppu = emulator->get_PPU();
+    ImGui::Begin("PPU");
+
+    ImGui::Text("Scanline: %d", ppu->get_scanline());
+    ImGui::Text("Cycle: %d", ppu->get_cycle());
+    ImGui::Text("Frame: %d", ppu->get_frame());
+
+    ImGui::End();
+}
+
+void Window::render_CPU(Emulator *emulator)
+{
+    CPU *cpu = emulator->get_CPU();
+    ImGui::Begin("CPU");
+
+    ImGui::Text("Cycle: %d", cpu->get_cycles());
+
+    ImGui::End();
 }
 
 void Window::render_menu_bar(Emulator &emulator)
@@ -314,7 +367,7 @@ void Window::post_render(uint8_t *frame_buffer)
 
     ImGui::Render();
     SDL_RenderClear(this->renderer);
-    SDL_UpdateTexture(this->texture, nullptr, frame_buffer, 256 * 2);
+    SDL_UpdateTexture(this->texture, nullptr, frame_buffer, 256 * 4);
     SDL_RenderCopy(this->renderer, this->texture, nullptr, nullptr);
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
     SDL_RenderPresent(this->renderer);

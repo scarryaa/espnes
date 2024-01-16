@@ -8,7 +8,7 @@ int main(int argv, char **args)
     log_file.close();
 
     Emulator emulator;
-    emulator.load_rom("../roms/Donkey Kong.nes");
+    emulator.load_rom("../roms/nestest.nes");
     emulator.set_PC_to_reset_vector();
     emulator.run();
 

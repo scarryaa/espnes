@@ -4,3 +4,5 @@ roms
 log.txt
 imgui.ini
 dk_log.debug
+nestest_log.debug
+nestest_log_nmi.debug

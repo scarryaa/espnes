@@ -3,7 +3,6 @@
 
 CPU::CPU(Memory *memory) : memory(memory)
 {
-    cycles = 0;
     total_cycles = 0;
     PC = 0;
     SP = 0xFD;
@@ -180,13 +179,12 @@ void CPU::reset()
     Y = 0;
     P = 0x24;
     interrupt = InterruptType::NONE;
-    cycles = 0;
-    total_cycles = 0;
+    total_cycles = 7;
 }
 
 int CPU::get_cycles()
 {
-    return cycles;
+    return total_cycles;
 }
 
 int CPU::run()
@@ -201,7 +199,7 @@ int CPU::run()
     }
 
     // Log opcode
-    CPUHelpers::log_cpu_status(this, memory, memory->read(PC));
+    // CPUHelpers::log_cpu_status(this, memory, memory->read(PC));
 
     // Fetch opcode
     uint8_t opcode = fetch_opcode();
@@ -221,6 +219,11 @@ int CPU::run()
     }
 
     return 0;
+}
+
+uint8_t CPU::get_current_opcode()
+{
+    return memory->read(PC);
 }
 
 uint8_t CPU::fetch_opcode()

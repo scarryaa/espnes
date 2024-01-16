@@ -8,8 +8,8 @@ void CPUHelpers::push_to_stack8(CPU *cpu, Memory *memory, uint8_t value)
 
 void CPUHelpers::push_to_stack16(CPU *cpu, Memory *memory, uint16_t value)
 {
-    uint8_t low_byte = value & 0x00FF;
     uint8_t high_byte = (value & 0xFF00) >> 8;
+    uint8_t low_byte = value & 0x00FF;
 
     memory->write(cpu->get_SP(), high_byte);
     cpu->set_SP(cpu->get_SP() - 1);

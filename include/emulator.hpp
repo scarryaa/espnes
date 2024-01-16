@@ -29,6 +29,7 @@ public:
     void pause();
     void reset();
     bool is_paused();
+    void log_cpu();
     void set_breakpoint(uint16_t address);
     void clear_breakpoint(uint16_t address);
     void clear_all_breakpoints();
@@ -37,6 +38,7 @@ public:
 
     uint16_t get_PC();
     CPU *get_CPU();
+    PPU *get_PPU();
     Disassembler get_disassembler();
 
 private:

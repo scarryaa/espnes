@@ -471,9 +471,9 @@ uint8_t Instructions::plp_impl(CPU *cpu, Memory *memory)
     // Pull P from stack
     cpu->set_P(CPUHelpers::pop_from_stack8(cpu, memory));
 
-    // Clear B and U flags
+    // Clear B and set U flag
     cpu->set_B(false);
-    cpu->set_U(false);
+    cpu->set_U(true);
 
     return 4;
 }

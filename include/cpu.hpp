@@ -30,6 +30,7 @@ public:
     uint8_t get_X();
     uint8_t get_Y();
     uint8_t get_P();
+    uint8_t get_current_opcode();
 
     // Setters
     void set_PC(uint16_t value);
@@ -72,7 +73,6 @@ public:
     static const int IRQ_VECTOR = 0xFFFE;
 
 private:
-    int cycles;
     long total_cycles;
     Instructions::InstructionFunction ins_table[256];
 

@@ -19,6 +19,11 @@ CPU *Emulator::get_CPU()
     return &cpu;
 }
 
+PPU *Emulator::get_PPU()
+{
+    return &ppu;
+}
+
 bool Emulator::is_paused()
 {
     return paused;
@@ -132,6 +137,7 @@ void Emulator::load_rom(const std::string &romPath)
 
 void Emulator::set_PC_to_reset_vector()
 {
+    // TODO tmp value
     cpu.set_PC(reset_vector);
 }
 
@@ -156,23 +162,44 @@ void Emulator::run()
 
         window.render(this);
 
+        uint8_t cycles = 0;
         if (!paused)
         {
             while (cycles_to_run > 0)
             {
-                int cycles = cpu.run();
+                // log cpu
+                log_cpu();
+
+                cycles = cpu.run();
                 cycles_to_run -= cycles;
+
+                ppu.step(cycles * 3);
 
                 if (is_breakpoint(cpu.get_PC()))
                 {
                     pause();
                 }
-
-                ppu.step(cycles * 3);
             }
         }
 
         // render graphics
         window.post_render(ppu.get_frame_buffer());
     }
+}
+
+void Emulator::log_cpu()
+{
+    // log in format C009  AD 02 20  LDA $2002 = 80                  A:00 X:FF Y:00 P:A4 SP:FF CYC:15
+    std::ofstream log_file;
+    log_file.open("log.txt", std::ios_base::app);
+    log_file << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << cpu.get_PC() << "  ";
+    log_file << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_current_opcode() << "  ";
+    log_file << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)memory.read(cpu.get_PC() + 1) << "  ";
+    log_file << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)memory.read(cpu.get_PC() + 2) << "  ";
+    log_file << "A:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_A() << " ";
+    log_file << "X:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_X() << " ";
+    log_file << "Y:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_Y() << " ";
+    log_file << "P:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_P() << " ";
+    log_file << "SP:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_SP() << " ";
+    log_file << "CYC:" << std::dec << std::uppercase << std::setfill('0') << std::setw(3) << ppu.get_total_cycles() << "\n";
 }

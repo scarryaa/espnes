@@ -18,11 +18,14 @@ public:
     Window();
     ~Window();
 
+    void render_memory_view(Emulator *emulator);
     bool poll_events();
     void render(Emulator *emulator);
     void post_render(uint8_t *frame_buffer);
     void render_menu_bar(Emulator &emulator);
     void render_disassembly(Emulator *emulator);
+    void render_PPU(Emulator *emulator);
+    void render_CPU(Emulator *emulator);
 
 private:
     SDL_Window *window;
