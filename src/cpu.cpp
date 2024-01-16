@@ -201,7 +201,7 @@ int CPU::run()
     }
 
     // Log opcode
-    // CPUHelpers::log_cpu_status(this, memory, memory->read(PC));
+    CPUHelpers::log_cpu_status(this, memory, memory->read(PC));
 
     // Fetch opcode
     uint8_t opcode = fetch_opcode();

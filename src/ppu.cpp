@@ -258,9 +258,6 @@ void PPU::render_background_scanline(int scanline)
         uint16_t tile_addr = 0x2000 + 0x400 * 0 + 16 * tile;
         uint8_t *tile_data = &vram[tile_addr];
 
-        if (tile == 0x24)
-            continue;
-
         uint8_t lo = tile_data[scanline % 8];
         uint8_t hi = tile_data[scanline % 8 + 8];
 

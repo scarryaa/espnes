@@ -16,14 +16,6 @@ public:
     PPU();
     ~PPU();
 
-    struct Pixel
-    {
-        uint8_t x;
-        uint8_t y;
-        uint8_t color;
-    };
-    std::vector<Pixel> pixel_batch;
-
     typedef void (*InterruptCallback)();
 
     uint8_t read(uint16_t address);

@@ -3,3 +3,4 @@ build
 roms
 log.txt
 imgui.ini
+dk_log.debug
