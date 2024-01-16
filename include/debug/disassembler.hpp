@@ -36,6 +36,7 @@ public:
         uint8_t operand1;
         uint8_t operand2;
         uint8_t bytes[2];
+        uint16_t length;
         const char *mnemonic;
         AddressingMode addressingMode;
     } Instruction;

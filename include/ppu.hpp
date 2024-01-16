@@ -6,6 +6,7 @@
 #include "../include/debug/debug.hpp"
 #include <string>
 #include "../include/interrupt_type.hpp"
+#include <vector>
 
 class CPU;
 
@@ -14,6 +15,14 @@ class PPU
 public:
     PPU();
     ~PPU();
+
+    struct Pixel
+    {
+        uint8_t x;
+        uint8_t y;
+        uint8_t color;
+    };
+    std::vector<Pixel> pixel_batch;
 
     typedef void (*InterruptCallback)();
 
@@ -25,6 +34,7 @@ public:
     void set_interrupt_callback(InterruptCallback callback);
     void set_cpu(CPU &cpu);
     void reset();
+    void render_background_scanline(int scanline);
 
 private:
     InterruptCallback interruptCallback;

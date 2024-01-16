@@ -16,7 +16,7 @@ public:
     static uint16_t indirect(CPU *cpu, Memory *memory);
     static uint16_t indirect_x(CPU *cpu, Memory *memory);
     static uint16_t indirect_y(CPU *cpu, Memory *memory, bool *page_crossed);
-    static uint8_t relative(CPU *cpu, Memory *memory);
+    static int8_t relative(CPU *cpu, Memory *memory);
     static uint8_t zero_page(CPU *cpu, Memory *memory);
     static uint8_t zero_page_x(CPU *cpu, Memory *memory);
     static uint8_t zero_page_y(CPU *cpu, Memory *memory);

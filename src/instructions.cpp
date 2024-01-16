@@ -172,7 +172,8 @@ uint8_t Instructions::asl_abs(CPU *cpu, Memory *memory)
 uint8_t Instructions::bpl_rel(CPU *cpu, Memory *memory)
 {
     // Get relative address
-    uint16_t addr = AddressingModes::relative(cpu, memory);
+    int8_t offset = AddressingModes::relative(cpu, memory);
+    uint16_t addr = cpu->get_PC() + offset;
 
     // Check if negative flag is clear
     if (!cpu->get_N())
@@ -579,7 +580,8 @@ uint8_t Instructions::rol_abs(CPU *cpu, Memory *memory)
 uint8_t Instructions::bmi_rel(CPU *cpu, Memory *memory)
 {
     // Get relative address
-    uint16_t addr = AddressingModes::relative(cpu, memory);
+    int8_t offset = AddressingModes::relative(cpu, memory);
+    uint16_t addr = cpu->get_PC() + offset;
 
     // Check if negative flag is set
     if (cpu->get_N())
@@ -948,7 +950,8 @@ uint8_t Instructions::lsr_abs(CPU *cpu, Memory *memory)
 uint8_t Instructions::bvc_rel(CPU *cpu, Memory *memory)
 {
     // Get relative address
-    uint16_t addr = AddressingModes::relative(cpu, memory);
+    int8_t offset = AddressingModes::relative(cpu, memory);
+    uint16_t addr = cpu->get_PC() + offset;
 
     // Check if overflow flag is clear
     if (!cpu->get_V())
@@ -1341,7 +1344,8 @@ uint8_t Instructions::ror_abs(CPU *cpu, Memory *memory)
 uint8_t Instructions::bvs_rel(CPU *cpu, Memory *memory)
 {
     // Get relative address
-    uint16_t addr = AddressingModes::relative(cpu, memory);
+    int8_t offset = AddressingModes::relative(cpu, memory);
+    uint16_t addr = cpu->get_PC() + offset;
 
     // Check if overflow flag is set
     if (cpu->get_V())
@@ -1668,7 +1672,8 @@ uint8_t Instructions::stx_abs(CPU *cpu, Memory *memory)
 uint8_t Instructions::bcc_rel(CPU *cpu, Memory *memory)
 {
     // Get relative address
-    uint16_t addr = AddressingModes::relative(cpu, memory);
+    int8_t offset = AddressingModes::relative(cpu, memory);
+    uint16_t addr = cpu->get_PC() + offset;
 
     // Check if carry flag is clear
     if (!cpu->get_C())
@@ -2010,7 +2015,8 @@ uint8_t Instructions::ldx_abs(CPU *cpu, Memory *memory)
 uint8_t Instructions::bcs_rel(CPU *cpu, Memory *memory)
 {
     // Get relative address
-    uint16_t addr = AddressingModes::relative(cpu, memory);
+    int8_t offset = AddressingModes::relative(cpu, memory);
+    uint16_t addr = cpu->get_PC() + offset;
 
     // Check if carry flag is set
     if (cpu->get_C())
@@ -2461,7 +2467,9 @@ uint8_t Instructions::dec_abs(CPU *cpu, Memory *memory)
 uint8_t Instructions::bne_rel(CPU *cpu, Memory *memory)
 {
     // Get relative address
-    uint16_t addr = AddressingModes::relative(cpu, memory);
+    int8_t offset = AddressingModes::relative(cpu, memory);
+
+    uint16_t addr = cpu->get_PC() + offset;
 
     // Check if zero flag is clear
     if (!cpu->get_Z())

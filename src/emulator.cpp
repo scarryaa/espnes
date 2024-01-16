@@ -31,8 +31,8 @@ void Emulator::pause()
 
 void Emulator::step()
 {
-    cpu.run();
-    ppu.step(3);
+    uint8_t cycles = cpu.run();
+    ppu.step(cycles * 3);
 }
 
 void Emulator::reset()
@@ -144,6 +144,13 @@ void Emulator::run()
     {
         auto current_time = std::chrono::high_resolution_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - start_time).count();
+        start_time = current_time;
+        const float max_elapsed = 1000.0f / 30.0f;
+
+        if (elapsed > max_elapsed)
+        {
+            elapsed = max_elapsed;
+        }
         cycles_to_run = (elapsed * CPU::CLOCK_SPEED / 1000);
         quit = window.poll_events();
 
@@ -151,14 +158,14 @@ void Emulator::run()
 
         if (!paused)
         {
-            if (cycles_to_run > 0)
+            while (cycles_to_run > 0)
             {
                 int cycles = cpu.run();
                 cycles_to_run -= cycles;
 
                 if (is_breakpoint(cpu.get_PC()))
                 {
-                    pause(); // pause the emulator at the breakpoint
+                    pause();
                 }
 
                 ppu.step(cycles * 3);

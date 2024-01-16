@@ -24,6 +24,7 @@ Disassembler::Instruction Disassembler::disassemble(uint16_t address)
     result.operand2 = memory->read(address + 2);
     result.mnemonic = instruction.mnemonic;
     result.addressingMode = instruction.addressingMode;
+    result.length = instruction.bytes;
 
     switch (instruction.addressingMode)
     {

@@ -11,7 +11,7 @@ Window::Window()
     }
 
     window = SDL_CreateWindow("espnes", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, 256, 240);
 
     // Setup Dear ImGui context
@@ -193,9 +193,11 @@ void Window::render_disassembly(Emulator *emulator)
         }
     }
 
+    ImGui::BeginChild("scrolling_region", ImVec2(0, 0), false, ImGuiWindowFlags_AlwaysVerticalScrollbar);
     ImGui::Columns(6, "disassembler_columns", false);
     ImGui::SetColumnWidth(0, 15.0f);
     ImGui::SetColumnWidth(1, 50.0f);
+
     for (int i = 0; i < 20; i++)
     {
         uint16_t address = startAddress + i;
@@ -255,7 +257,10 @@ void Window::render_disassembly(Emulator *emulator)
         // Mnemonic
         ImGui::Text("%s", instruction.mnemonic);
         ImGui::NextColumn();
+        address += instruction.length;
     }
+
+    ImGui::EndChild();
 
     ImGui::End();
 }
@@ -304,8 +309,8 @@ void Window::render_menu_bar(Emulator &emulator)
 
 void Window::post_render(uint8_t *frame_buffer)
 {
-    // Delay to control frame rate (16 ms = 60 fps)
-    SDL_Delay(16);
+    // // Delay to control frame rate (16 ms = 60 fps)
+    // SDL_Delay(16);
 
     ImGui::Render();
     SDL_RenderClear(this->renderer);

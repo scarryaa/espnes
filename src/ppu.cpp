@@ -199,7 +199,7 @@ void PPU::step(int cycles)
     this->total_cycles += cycles / 3;
 
     // VBlank
-    if (this->scanline == VBLANK_SCANLINE && this->cycles == 1)
+    if (this->scanline == VBLANK_SCANLINE)
     {
         // Set VBlank flag
         this->status |= 0x80;
@@ -218,7 +218,7 @@ void PPU::step(int cycles)
     }
 
     // Pre-render scanline
-    else if (this->scanline == SCANLINES && this->cycles == 1)
+    else if (this->scanline == SCANLINES)
     {
         // Clear VBlank flag
         this->status &= ~0x80;
@@ -227,7 +227,7 @@ void PPU::step(int cycles)
         this->NMI_occurred = 0;
     }
 
-    if (this->cycles == SCANLINE_CYCLES)
+    if (this->cycles >= SCANLINE_CYCLES)
     {
         this->cycles = 0;
         this->scanline++;
@@ -239,10 +239,35 @@ void PPU::step(int cycles)
         this->frame++;
     }
 
+    // Render background
+    if (this->scanline < 240)
+    {
+        render_background_scanline(this->scanline);
+    }
     // draw_pattern_table(0, 8, 0, this->palette);
     // draw_pattern_table(128, 8, 1, this->palette);
     // draw_name_table(0, 8, 0, this->palette);
-    draw_name_table(0, 8, 1, this->palette);
+    // draw_name_table(0, 8, 1, this->palette);
+}
+
+void PPU::render_background_scanline(int scanline)
+{
+    for (int x = 0; x < XRES; x++)
+    {
+        uint16_t tile = 32 * scanline / 8 + x / 8;
+        uint16_t tile_addr = 0x2000 + 0x400 * 0 + 16 * tile;
+        uint8_t *tile_data = &vram[tile_addr];
+
+        if (tile == 0x24)
+            continue;
+
+        uint8_t lo = tile_data[scanline % 8];
+        uint8_t hi = tile_data[scanline % 8 + 8];
+
+        uint8_t color_index = ((hi >> (7 - (x % 8))) & 0x1) << 1 | ((lo >> (7 - (x % 8))) & 0x1);
+        uint16_t color = palette[color_index];
+        draw_pixel(x, scanline, color);
+    }
 }
 
 void PPU::draw_pattern_table(int startX, int startY, int table, uint8_t *palette)
@@ -297,7 +322,7 @@ void PPU::draw_name_table(int startX, int startY, int table, const uint8_t *pale
     }
 }
 
-void PPU::draw_pixel(int x, int y, uint16_t color)
+inline void PPU::draw_pixel(int x, int y, uint16_t color)
 {
     int index = (y * XRES + x) * COLOR_DEPTH;
 

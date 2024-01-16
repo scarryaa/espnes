@@ -139,7 +139,7 @@ uint16_t AddressingModes::indirect_y(CPU *cpu, Memory *memory, bool *page_crosse
     return addr;
 }
 
-uint8_t AddressingModes::relative(CPU *cpu, Memory *memory)
+int8_t AddressingModes::relative(CPU *cpu, Memory *memory)
 {
     // Get relative address
     int8_t offset = static_cast<int8_t>(cpu->fetch_opcode());
