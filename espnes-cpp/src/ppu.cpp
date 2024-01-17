@@ -294,7 +294,7 @@ void PPU::step(int cycles)
         palette[i] = vram[0x3F00 + i];
     }
 
-    // render_background_scanline(this->scanline);
+     render_background_scanline(this->scanline);
     // draw_pattern_table(0, 8, 0, this->palette);
     // draw_pattern_table(128, 8, 1, this->palette);
     // draw_name_table(0, 8, 0, this->palette);
@@ -321,11 +321,10 @@ void PPU::render_background_scanline(int scanline)
         uint8_t lo = tile_data[scanline % 8];
         uint8_t hi = tile_data[scanline % 8 + 8];
 
-        uint32_t color = 0xFFFF0000;
-        if (tile != 0x24)
-        {
-            draw_pixel(x, scanline, color);
-        }
+        
+        uint8_t color_index = ((hi >> (7 - x % 8)) & 0x1) << 1 | ((lo >> (7 - x % 8)) & 0x1);
+        uint16_t color = PaletteLUT_2C04_0001[palette[color_index]];
+        draw_pixel(x, scanline, color);
     }
 }
 

@@ -41,6 +41,12 @@ void CPUHelpers::check_for_illegal_opcode(uint8_t opcode)
     }
 }
 
+uint16_t CPUHelpers::adc(uint8_t op1, uint8_t op2, uint8_t carry)
+{
+    uint16_t result = op1 + op2 + (carry);
+    return result;
+}
+
 void CPUHelpers::log_cpu_status(CPU* cpu, Memory* memory, uint8_t opcode)
 {
     // Write to file in the format uppercased hex values with leading zeroes

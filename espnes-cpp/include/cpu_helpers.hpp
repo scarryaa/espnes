@@ -17,6 +17,7 @@ public:
     static uint16_t pop_from_stack16(CPU *cpu, Memory *memory);
     static void check_for_illegal_opcode(uint8_t opcode);
     static void log_cpu_status(CPU *cpu, Memory *memory, uint8_t opcode);
+    static uint16_t adc(uint8_t op1, uint8_t op2, uint8_t carry);
 };
 
 #endif

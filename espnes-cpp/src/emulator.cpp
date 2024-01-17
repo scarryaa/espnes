@@ -188,7 +188,7 @@ void Emulator::run()
             }
 
             //log cpu
-            log_cpu();
+            //log_cpu();
 
             cycles = cpu.run();
 
