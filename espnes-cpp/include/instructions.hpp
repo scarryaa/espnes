@@ -1,0 +1,171 @@
+#ifndef INSTRUCTIONS_HPP
+#define INSTRUCTIONS_HPP
+
+#include <cstdint>
+#include "../include/memory.hpp"
+#include "../include/addressing_modes.hpp"
+
+class CPU;
+
+class Instructions
+{
+public:
+    static uint8_t brk_impl(CPU *cpu, Memory *memory);
+    static uint8_t ora_x_ind(CPU *cpu, Memory *memory);
+    static uint8_t ora_zpg(CPU *cpu, Memory *memory);
+    static uint8_t asl_zpg(CPU *cpu, Memory *memory);
+    static uint8_t php_impl(CPU *cpu, Memory *memory);
+    static uint8_t ora_imm(CPU *cpu, Memory *memory);
+    static uint8_t asl_a(CPU *cpu, Memory *memory);
+    static uint8_t ora_abs(CPU *cpu, Memory *memory);
+    static uint8_t asl_abs(CPU *cpu, Memory *memory);
+    static uint8_t bpl_rel(CPU *cpu, Memory *memory);
+    static uint8_t ora_ind_y(CPU *cpu, Memory *memory);
+    static uint8_t ora_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t asl_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t clc_impl(CPU *cpu, Memory *memory);
+    static uint8_t ora_abs_y(CPU *cpu, Memory *memory);
+    static uint8_t ora_abs_x(CPU *cpu, Memory *memory);
+    static uint8_t asl_abs_x(CPU *cpu, Memory *memory);
+    static uint8_t jsr_abs(CPU *cpu, Memory *memory);
+    static uint8_t and_x_ind(CPU *cpu, Memory *memory);
+    static uint8_t bit_zpg(CPU *cpu, Memory *memory);
+    static uint8_t and_zpg(CPU *cpu, Memory *memory);
+    static uint8_t rol_zpg(CPU *cpu, Memory *memory);
+    static uint8_t plp_impl(CPU *cpu, Memory *memory);
+    static uint8_t and_imm(CPU *cpu, Memory *memory);
+    static uint8_t rol_a(CPU *cpu, Memory *memory);
+    static uint8_t bit_abs(CPU *cpu, Memory *memory);
+    static uint8_t and_abs(CPU *cpu, Memory *memory);
+    static uint8_t rol_abs(CPU *cpu, Memory *memory);
+    static uint8_t bmi_rel(CPU *cpu, Memory *memory);
+    static uint8_t and_ind_y(CPU *cpu, Memory *memory);
+    static uint8_t and_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t rol_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t sec_impl(CPU *cpu, Memory *memory);
+    static uint8_t and_abs_y(CPU *cpu, Memory *memory);
+    static uint8_t and_abs_x(CPU *cpu, Memory *memory);
+    static uint8_t rol_abs_x(CPU *cpu, Memory *memory);
+    static uint8_t rti_impl(CPU *cpu, Memory *memory);
+    static uint8_t eor_x_ind(CPU *cpu, Memory *memory);
+    static uint8_t eor_zpg(CPU *cpu, Memory *memory);
+    static uint8_t lsr_zpg(CPU *cpu, Memory *memory);
+    static uint8_t pha_impl(CPU *cpu, Memory *memory);
+    static uint8_t eor_imm(CPU *cpu, Memory *memory);
+    static uint8_t lsr_a(CPU *cpu, Memory *memory);
+    static uint8_t jmp_abs(CPU *cpu, Memory *memory);
+    static uint8_t eor_abs(CPU *cpu, Memory *memory);
+    static uint8_t lsr_abs(CPU *cpu, Memory *memory);
+    static uint8_t bvc_rel(CPU *cpu, Memory *memory);
+    static uint8_t eor_ind_y(CPU *cpu, Memory *memory);
+    static uint8_t eor_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t lsr_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t cli_impl(CPU *cpu, Memory *memory);
+    static uint8_t eor_abs_y(CPU *cpu, Memory *memory);
+    static uint8_t eor_abs_x(CPU *cpu, Memory *memory);
+    static uint8_t lsr_abs_x(CPU *cpu, Memory *memory);
+    static uint8_t rts_impl(CPU *cpu, Memory *memory);
+    static uint8_t adc_x_ind(CPU *cpu, Memory *memory);
+    static uint8_t adc_zpg(CPU *cpu, Memory *memory);
+    static uint8_t ror_zpg(CPU *cpu, Memory *memory);
+    static uint8_t pla_impl(CPU *cpu, Memory *memory);
+    static uint8_t adc_imm(CPU *cpu, Memory *memory);
+    static uint8_t ror_a(CPU *cpu, Memory *memory);
+    static uint8_t jmp_ind(CPU *cpu, Memory *memory);
+    static uint8_t adc_abs(CPU *cpu, Memory *memory);
+    static uint8_t ror_abs(CPU *cpu, Memory *memory);
+    static uint8_t bvs_rel(CPU *cpu, Memory *memory);
+    static uint8_t adc_ind_y(CPU *cpu, Memory *memory);
+    static uint8_t adc_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t ror_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t sei_impl(CPU *cpu, Memory *memory);
+    static uint8_t adc_abs_y(CPU *cpu, Memory *memory);
+    static uint8_t adc_abs_x(CPU *cpu, Memory *memory);
+    static uint8_t ror_abs_x(CPU *cpu, Memory *memory);
+    static uint8_t sta_x_ind(CPU *cpu, Memory *memory);
+    static uint8_t sty_zpg(CPU *cpu, Memory *memory);
+    static uint8_t sta_zpg(CPU *cpu, Memory *memory);
+    static uint8_t stx_zpg(CPU *cpu, Memory *memory);
+    static uint8_t dey_impl(CPU *cpu, Memory *memory);
+    static uint8_t txa_impl(CPU *cpu, Memory *memory);
+    static uint8_t sty_abs(CPU *cpu, Memory *memory);
+    static uint8_t sta_abs(CPU *cpu, Memory *memory);
+    static uint8_t stx_abs(CPU *cpu, Memory *memory);
+    static uint8_t bcc_rel(CPU *cpu, Memory *memory);
+    static uint8_t sta_ind_y(CPU *cpu, Memory *memory);
+    static uint8_t sty_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t sta_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t stx_zpg_y(CPU *cpu, Memory *memory);
+    static uint8_t tya_impl(CPU *cpu, Memory *memory);
+    static uint8_t sta_abs_y(CPU *cpu, Memory *memory);
+    static uint8_t txs_impl(CPU *cpu, Memory *memory);
+    static uint8_t sta_abs_x(CPU *cpu, Memory *memory);
+    static uint8_t ldy_imm(CPU *cpu, Memory *memory);
+    static uint8_t lda_x_ind(CPU *cpu, Memory *memory);
+    static uint8_t ldx_imm(CPU *cpu, Memory *memory);
+    static uint8_t ldy_zpg(CPU *cpu, Memory *memory);
+    static uint8_t lda_zpg(CPU *cpu, Memory *memory);
+    static uint8_t ldx_zpg(CPU *cpu, Memory *memory);
+    static uint8_t tay_impl(CPU *cpu, Memory *memory);
+    static uint8_t lda_imm(CPU *cpu, Memory *memory);
+    static uint8_t tax_impl(CPU *cpu, Memory *memory);
+    static uint8_t ldy_abs(CPU *cpu, Memory *memory);
+    static uint8_t lda_abs(CPU *cpu, Memory *memory);
+    static uint8_t ldx_abs(CPU *cpu, Memory *memory);
+    static uint8_t bcs_rel(CPU *cpu, Memory *memory);
+    static uint8_t lda_ind_y(CPU *cpu, Memory *memory);
+    static uint8_t ldy_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t lda_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t ldx_zpg_y(CPU *cpu, Memory *memory);
+    static uint8_t clv_impl(CPU *cpu, Memory *memory);
+    static uint8_t lda_abs_y(CPU *cpu, Memory *memory);
+    static uint8_t tsx_impl(CPU *cpu, Memory *memory);
+    static uint8_t ldy_abs_x(CPU *cpu, Memory *memory);
+    static uint8_t lda_abs_x(CPU *cpu, Memory *memory);
+    static uint8_t ldx_abs_y(CPU *cpu, Memory *memory);
+    static uint8_t cpy_imm(CPU *cpu, Memory *memory);
+    static uint8_t cmp_x_ind(CPU *cpu, Memory *memory);
+    static uint8_t cpy_zpg(CPU *cpu, Memory *memory);
+    static uint8_t cmp_zpg(CPU *cpu, Memory *memory);
+    static uint8_t dec_zpg(CPU *cpu, Memory *memory);
+    static uint8_t iny_impl(CPU *cpu, Memory *memory);
+    static uint8_t cmp_imm(CPU *cpu, Memory *memory);
+    static uint8_t dex_impl(CPU *cpu, Memory *memory);
+    static uint8_t cpy_abs(CPU *cpu, Memory *memory);
+    static uint8_t cmp_abs(CPU *cpu, Memory *memory);
+    static uint8_t dec_abs(CPU *cpu, Memory *memory);
+    static uint8_t bne_rel(CPU *cpu, Memory *memory);
+    static uint8_t cmp_ind_y(CPU *cpu, Memory *memory);
+    static uint8_t cmp_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t dec_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t cld_impl(CPU *cpu, Memory *memory);
+    static uint8_t cmp_abs_y(CPU *cpu, Memory *memory);
+    static uint8_t cmp_abs_x(CPU *cpu, Memory *memory);
+    static uint8_t dec_abs_x(CPU *cpu, Memory *memory);
+    static uint8_t cpx_imm(CPU *cpu, Memory *memory);
+    static uint8_t sbc_x_ind(CPU *cpu, Memory *memory);
+    static uint8_t cpx_zpg(CPU *cpu, Memory *memory);
+    static uint8_t sbc_zpg(CPU *cpu, Memory *memory);
+    static uint8_t inc_zpg(CPU *cpu, Memory *memory);
+    static uint8_t inx_impl(CPU *cpu, Memory *memory);
+    static uint8_t sbc_imm(CPU *cpu, Memory *memory);
+    static uint8_t nop_impl(CPU *cpu, Memory *memory);
+    static uint8_t cpx_abs(CPU *cpu, Memory *memory);
+    static uint8_t sbc_abs(CPU *cpu, Memory *memory);
+    static uint8_t inc_abs(CPU *cpu, Memory *memory);
+    static uint8_t beq_rel(CPU *cpu, Memory *memory);
+    static uint8_t sbc_ind_y(CPU *cpu, Memory *memory);
+    static uint8_t sbc_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t inc_zpg_x(CPU *cpu, Memory *memory);
+    static uint8_t sed_impl(CPU *cpu, Memory *memory);
+    static uint8_t sbc_abs_y(CPU *cpu, Memory *memory);
+    static uint8_t sbc_abs_x(CPU *cpu, Memory *memory);
+    static uint8_t inc_abs_x(CPU *cpu, Memory *memory);
+
+    typedef uint8_t (*InstructionFunction)(CPU *cpu, Memory *memory);
+    static Instructions::InstructionFunction ins_table[256];
+
+private:
+};
+
+#endif
