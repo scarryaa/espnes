@@ -18,6 +18,8 @@ PPU::PPU() : cycles(0), scanline(0), frame(0), total_cycles(7), control(0), mask
     {
         frame_buffer[i] = 0;
     }
+
+    this->vram_address = 0;
 }
 
 PPU::~PPU()
@@ -214,10 +216,16 @@ void PPU::write(uint16_t address, uint8_t value)
         }
         break;
     case 7:
+    {
         // PPUDATA
-        this->vram[this->vram_address] = value;
-        this->vram_address++; // Increment VRAM address after writes
+        // Adjust address for mirroring if necessary
+        unsigned int mirrored_address = this->vram_address % 0x2000;
+        this->vram[mirrored_address] = value;
+        printf("Writing to VRAM (mirrored) address %04X\n", mirrored_address);
+        // Increment and wrap VRAM address after writes
+        this->vram_address = (this->vram_address + 1) & 0x3FFF;
         break;
+    }
     case 8:
         // OAMDMA
         this->oam_dma = value;

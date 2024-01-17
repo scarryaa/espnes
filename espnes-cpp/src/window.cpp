@@ -267,29 +267,29 @@ void Window::render_disassembly(Emulator* emulator)
 
 void Window::render_memory_view(Emulator* emulator)
 {
-    //PPU* ppu = emulator->get_PPU();
-    //uint8_t* vram = ppu->get_vram();
+    PPU* ppu = emulator->get_PPU();
+    uint8_t* vram = ppu->get_vram();
 
-    //ImGui::Begin("VRAM View");
+    ImGui::Begin("VRAM View");
 
-    //const int bytes_per_row = 16;
-    //int total_rows = 0x2000 / bytes_per_row;
+    const int bytes_per_row = 16;
+    int total_rows = 0x2000 / bytes_per_row;
 
-    //ImGui::BeginChild("VRAM", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::BeginChild("VRAM", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
 
-    //for (int row = 0; row < total_rows; ++row)
-    //{
-    //    for (int col = 0; col < bytes_per_row; ++col)
-    //    {
-    //        int addr = row * bytes_per_row + col;
-    //        ImGui::Text("%02X ", vram[addr]);
-    //        ImGui::SameLine();
-    //    }
-    //    ImGui::NewLine();
-    //}
+    for (int row = 0; row < total_rows; ++row)
+    {
+        for (int col = 0; col < bytes_per_row; ++col)
+        {
+            int addr = row * bytes_per_row + col;
+            ImGui::Text("%02X ", vram[addr]);
+            ImGui::SameLine();
+        }
+        ImGui::NewLine();
+    }
 
-    //ImGui::EndChild();
-    //ImGui::End();
+    ImGui::EndChild();
+    ImGui::End();
 }
 
 void Window::render(Emulator* emulator)
@@ -298,17 +298,17 @@ void Window::render(Emulator* emulator)
     ImGui_ImplSDL2_NewFrame(this->window);
     ImGui::NewFrame();
 
-    /*this->render_menu_bar(*emulator);*/
+    this->render_menu_bar(*emulator);
 
     CPU* cpu = emulator->get_CPU();
-    //if (this->show_disassembly)
-    //{
-    //    this->render_disassembly(emulator);
-    //}
+    if (this->show_disassembly)
+    {
+        this->render_disassembly(emulator);
+    }
 
-    //this->render_PPU(emulator);
-    //this->render_CPU(emulator);
-    //this->render_memory_view(emulator);
+    this->render_PPU(emulator);
+    this->render_CPU(emulator);
+    this->render_memory_view(emulator);
 }
 
 void Window::render_PPU(Emulator* emulator)
