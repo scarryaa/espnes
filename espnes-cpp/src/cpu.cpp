@@ -187,6 +187,11 @@ int CPU::get_cycles()
     return total_cycles;
 }
 
+long CPU::get_total_cycles()
+{
+	return total_cycles;
+}
+
 int CPU::run()
 {
     uint8_t irq_cycles = 0;
@@ -196,6 +201,7 @@ int CPU::run()
     {
         irq_cycles = Interrupt::handle_interrupt(interrupt, this, memory);
         this->interrupt = InterruptType::NONE;
+        return irq_cycles;
     }
 
     // Log opcode

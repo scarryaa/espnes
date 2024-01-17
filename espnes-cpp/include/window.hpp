@@ -9,6 +9,7 @@
 #include "imgui/imgui_impl_sdlrenderer2.h"
 #include "debug/disassembler.hpp"
 #include <iostream>
+#include "../include/breakpoint_types.h"
 
 class Emulator;
 
@@ -26,6 +27,7 @@ public:
     void render_disassembly(Emulator *emulator);
     void render_PPU(Emulator *emulator);
     void render_CPU(Emulator *emulator);
+    void render_breakpoints(Emulator* emulator);
 
 private:
     SDL_Window *window;

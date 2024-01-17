@@ -168,12 +168,12 @@ uint8_t Instructions::asl_abs(CPU* cpu, Memory* memory)
     return 6;
 }
 
-// 0x10
 uint8_t Instructions::bpl_rel(CPU* cpu, Memory* memory)
 {
     // Get relative address
     int8_t offset = AddressingModes::relative(cpu, memory);
-    uint16_t addr = cpu->get_PC() + offset;
+    uint16_t originalPC = cpu->get_PC();
+    uint16_t addr = originalPC + offset;
 
     // Check if negative flag is clear
     if (!cpu->get_N())
@@ -182,7 +182,7 @@ uint8_t Instructions::bpl_rel(CPU* cpu, Memory* memory)
         cpu->set_PC(addr);
 
         // Add cycles if page boundary is crossed
-        if ((cpu->get_PC() & 0xFF00) != (addr & 0xFF00))
+        if ((originalPC & 0xFF00) != (addr & 0xFF00))
         {
             return 4;
         }
@@ -194,6 +194,7 @@ uint8_t Instructions::bpl_rel(CPU* cpu, Memory* memory)
 
     return 2;
 }
+
 
 // 0x11
 uint8_t Instructions::ora_ind_y(CPU* cpu, Memory* memory)

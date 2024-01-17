@@ -51,16 +51,14 @@ Disassembler Emulator::get_disassembler()
     return disassembler;
 }
 
-void Emulator::set_breakpoint(uint16_t address)
+void Emulator::add_breakpoint(breakpoint_type_t type, uint16_t value)
 {
-    Debug::debug_print("Setting breakpoint at 0x%04X", address);
-    breakpoints.insert(address);
+    breakpoints.insert({ type, value });
 }
 
-void Emulator::clear_breakpoint(uint16_t address)
+void Emulator::clear_breakpoint(breakpoint_type_t type, uint16_t value)
 {
-    Debug::debug_print("Clearing breakpoint at 0x%04X", address);
-    breakpoints.erase(address);
+	breakpoints.erase({ type, value });
 }
 
 void Emulator::clear_all_breakpoints()
@@ -68,14 +66,34 @@ void Emulator::clear_all_breakpoints()
     breakpoints.clear();
 }
 
-bool Emulator::is_breakpoint(uint16_t address)
+bool Emulator::is_breakpoint(breakpoint_type_t type, long value)
 {
-    return breakpoints.find(address) != breakpoints.end();
+    for (auto breakpoint : breakpoints)
+    {
+        if (breakpoint.type == type && breakpoint.address == value)
+        {
+			return true;
+		}
+	}
+	return false;
 }
 
-std::set<uint16_t> Emulator::get_breakpoints()
+std::set<Breakpoint> Emulator::get_breakpoints()
 {
     return breakpoints;
+}
+
+std::set<Breakpoint> Emulator::get_breakpoints_of_type(breakpoint_type_t type)
+{
+	std::set<Breakpoint> breakpoints_of_type;
+    for (auto breakpoint : breakpoints)
+    {
+        if (breakpoint.type == type)
+        {
+			breakpoints_of_type.insert(breakpoint);
+		}
+	}
+	return breakpoints_of_type;
 }
 
 void Emulator::load_rom(const std::string& romPath)
@@ -162,23 +180,23 @@ void Emulator::run()
         window.render(this);
 
         uint8_t cycles = 0;
-        if (!paused)
+        while (cycles_to_run > 0)
         {
-            while (cycles_to_run > 0)
+            if (paused)
             {
-                //log cpu
-                //log_cpu();
-
-                cycles = cpu.run();
-                cycles_to_run -= cycles;
-
-                ppu.step(cycles * 3);
-
-                if (is_breakpoint(cpu.get_PC()))
-                {
-                    pause();
-                }
+                break;
             }
+
+            //log cpu
+            log_cpu();
+
+            cycles = cpu.run();
+
+            cycles_to_run -= cycles;
+
+            ppu.step(cycles * 3);
+
+            check_for_breakpoints();
         }
 
         // render graphics
@@ -186,11 +204,19 @@ void Emulator::run()
     }
 }
 
+void Emulator::open_log_file()
+{
+	log_file.open("log.txt", std::ios_base::app);
+}
+
+void Emulator::close_log_file()
+{
+	log_file.close();
+}
+
 void Emulator::log_cpu()
 {
      /*log in format C009  AD 02 20  LDA $2002 = 80                  A:00 X:FF Y:00 P:A4 SP:FF CYC:15*/
-    std::ofstream log_file;
-    log_file.open("log.txt", std::ios_base::app);
     log_file << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << cpu.get_PC() << "  ";
     log_file << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_current_opcode() << "  ";
     log_file << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)memory.read(cpu.get_PC() + 1) << "  ";
@@ -201,4 +227,21 @@ void Emulator::log_cpu()
     log_file << "P:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_P() << " ";
     log_file << "SP:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_SP() << " ";
     log_file << "CYC:" << std::dec << std::uppercase << std::setfill('0') << std::setw(3) << ppu.get_total_cycles() << "\n";
+    log_file.flush();
+}
+
+void Emulator::check_for_breakpoints()
+{
+    if (is_breakpoint(BREAKPOINT_TYPE_ADDRESS, cpu.get_PC()))
+    {
+		pause();
+    }
+    else if (is_breakpoint(BREAKPOINT_TYPE_CYCLE, cpu.get_total_cycles()))
+    {
+		pause();
+    }
+    else if (is_breakpoint(BREAKPOINT_TYPE_SCANLINE, ppu.get_scanline()))
+    {
+		pause();
+	}
 }

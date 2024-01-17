@@ -18,6 +18,7 @@ public:
     ~CPU();
 
     int get_cycles();
+    long get_total_cycles();
     int run();
     void set_interrupt(InterruptType type);
     uint8_t fetch_opcode();

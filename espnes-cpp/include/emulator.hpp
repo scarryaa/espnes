@@ -14,7 +14,7 @@
 #include <chrono>
 #include <iostream>
 #include <vector>
-#include <set>
+#include "../include/breakpoint_types.h"
 
 class Emulator
 {
@@ -30,11 +30,16 @@ public:
     void reset();
     bool is_paused();
     void log_cpu();
-    void set_breakpoint(uint16_t address);
-    void clear_breakpoint(uint16_t address);
+    void clear_breakpoint(breakpoint_type_t type, uint16_t value);
     void clear_all_breakpoints();
-    bool is_breakpoint(uint16_t address);
-    std::set<uint16_t> get_breakpoints();
+    bool is_breakpoint(breakpoint_type_t type, long value);
+    void check_for_breakpoints();
+    void open_log_file();
+    void close_log_file();
+    std::set<Breakpoint> get_breakpoints();
+    std::set<Breakpoint> get_breakpoints_of_type(breakpoint_type_t type);
+
+    void add_breakpoint(breakpoint_type_t type, uint16_t value);
 
     uint16_t get_PC();
     CPU *get_CPU();
@@ -42,7 +47,8 @@ public:
     Disassembler get_disassembler();
 
 private:
-    std::set<uint16_t> breakpoints = {};
+    std::ofstream log_file;
+    std::set<Breakpoint> breakpoints;
     Window window;
     CPU cpu;
     Cartridge cartridge;

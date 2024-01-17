@@ -218,10 +218,9 @@ void PPU::write(uint16_t address, uint8_t value)
     case 7:
     {
         // PPUDATA
-        // Adjust address for mirroring if necessary
+        // Adjust address for mirroring
         unsigned int mirrored_address = this->vram_address % 0x2000;
         this->vram[mirrored_address] = value;
-        printf("Writing to VRAM (mirrored) address %04X\n", mirrored_address);
         // Increment and wrap VRAM address after writes
         this->vram_address = (this->vram_address + 1) & 0x3FFF;
         break;
@@ -247,6 +246,19 @@ void PPU::step(int cycles)
 {
     this->cycles += cycles;
     this->total_cycles += cycles / 3;
+
+    if (this->cycles >= SCANLINE_CYCLES)
+    {
+        this->cycles -= SCANLINE_CYCLES;
+        this->scanline++;
+    }
+
+    if (this->scanline == SCANLINES + 1)
+    {
+        this->scanline = 0;
+        //draw_name_table(0);
+        this->frame++;
+    }
 
     // VBlank
     if (this->scanline == VBLANK_SCANLINE)
@@ -275,19 +287,6 @@ void PPU::step(int cycles)
 
         // Clear NMI
         this->NMI_occurred = 0;
-    }
-
-    if (this->cycles >= SCANLINE_CYCLES)
-    {
-        this->cycles -= SCANLINE_CYCLES;
-        this->scanline++;
-    }
-
-    if (this->scanline == SCANLINES + 1)
-    {
-        this->scanline = 1;
-        draw_name_table(0);
-        this->frame++;
     }
 
     for (int i = 0; i < 32; i++)
@@ -375,7 +374,7 @@ void PPU::draw_name_table(int nameTableIndex)
                 for (int tileCol = 0; tileCol < 8; ++tileCol)
                 {
                     uint8_t colorIndex = ((hi >> (7 - tileCol)) & 1) << 1 | ((lo >> (7 - tileCol)) & 1);
-                    // Fetch color from palette (assuming a simple direct mapping for now)
+                    // Fetch color from palette
                     uint32_t color = PaletteLUT_2C04_0001[palette[colorIndex]];
                     draw_pixel(col * 8 + tileCol, row * 8 + tileRow, color);
                 }

@@ -36,6 +36,7 @@
   <ItemGroup>
     <ClInclude Include="include\addressing_modes.hpp" />
     <ClInclude Include="include\apu.hpp" />
+    <ClInclude Include="include\breakpoint_types.h" />
     <ClInclude Include="include\cartridge.hpp" />
     <ClInclude Include="include\cpu.hpp" />
     <ClInclude Include="include\cpu_helpers.hpp" />
@@ -58,7 +59,6 @@
     <ClInclude Include="include\window.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\imgui\apu.cpp" />
     <ClCompile Include="src\addressing_modes.cpp" />
     <ClCompile Include="src\cartridge.cpp" />
     <ClCompile Include="src\cpu.cpp" />
@@ -80,6 +80,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\memory.cpp" />
     <ClCompile Include="src\ppu.cpp" />
+    <ClCompile Include="src\apu.cpp" />
     <ClCompile Include="src\window.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -198,13 +198,12 @@ void Window::render_disassembly(Emulator* emulator)
     ImGui::SetColumnWidth(0, 15.0f);
     ImGui::SetColumnWidth(1, 50.0f);
 
+    uint16_t address = startAddress;
     for (int i = 0; i < 20; i++)
     {
-        uint16_t address = startAddress + i;
-
         // Check if the address is a breakpoint
         // if so, draw a red circle
-        if (emulator->is_breakpoint(address))
+        if (emulator->is_breakpoint(BREAKPOINT_TYPE_ADDRESS, address))
         {
             ImGui::SetCursorPosX(5.0f);
             ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "O");
@@ -230,13 +229,13 @@ void Window::render_disassembly(Emulator* emulator)
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
         {
             // Toggle the breakpoint
-            if (emulator->is_breakpoint(address))
+            if (emulator->is_breakpoint(BREAKPOINT_TYPE_ADDRESS, address))
             {
-                emulator->clear_breakpoint(address);
+                emulator->clear_breakpoint(BREAKPOINT_TYPE_ADDRESS, address);
             }
             else
             {
-                emulator->set_breakpoint(address);
+                emulator->add_breakpoint(BREAKPOINT_TYPE_ADDRESS, address);
             }
         }
 
@@ -309,6 +308,7 @@ void Window::render(Emulator* emulator)
     this->render_PPU(emulator);
     this->render_CPU(emulator);
     this->render_memory_view(emulator);
+    this->render_breakpoints(emulator);
 }
 
 void Window::render_PPU(Emulator* emulator)
@@ -331,6 +331,126 @@ void Window::render_CPU(Emulator* emulator)
     ImGui::Text("Cycle: %d", cpu->get_cycles());
 
     ImGui::End();
+}
+
+void Window::render_breakpoints(Emulator* emulator)
+{
+    ImGui::Begin("Breakpoints");
+
+    ImGui::BeginChild("scrolling_region", ImVec2(0, 0), false);
+
+    auto breakpoints = emulator->get_breakpoints();
+    for (auto it = breakpoints.begin(); it != breakpoints.end(); ++it)
+    {
+		ImGui::Text("%04X", *it);
+	}
+
+    ImGui::EndChild();
+
+    ImGui::Button("Clear All");
+
+    if (ImGui::IsItemClicked())
+    {
+		emulator->clear_all_breakpoints();
+	}
+
+    ImGui::SameLine();
+
+    ImGui::Button("Add");
+
+    // Spawn a new window if the button is clicked
+    if (ImGui::IsItemClicked())
+    {
+        ImGui::OpenPopup("Add Breakpoint");
+    }
+
+    // Create the popup window
+    if (ImGui::BeginPopup("Add Breakpoint"))
+    {
+		static char input[5] = "0000";
+		ImGui::InputText("Address", input, 5);
+        
+        // Radio button for scanline breakpoint
+        static bool scanline = false;
+        ImGui::RadioButton("Scanline", scanline);
+
+        static bool cycle = false;
+        static bool frame = false;
+        static bool instruction = false;
+        static bool read = false;
+        static bool write = false;
+        static bool execute = false;
+
+        if (ImGui::IsItemClicked())
+        {
+            scanline = true;
+
+            // Clear the other radio buttons
+            cycle = false;
+            frame = false;
+            instruction = false;
+            read = false;
+            write = false;
+            execute = false;
+		}
+
+        // Radio button for cycle breakpoint
+        ImGui::RadioButton("Cycle", cycle);
+
+        if (ImGui::IsItemClicked())
+        {
+			cycle = true;
+
+            // Clear the other radio buttons
+			scanline = false;
+			frame = false;
+			instruction = false;
+			read = false;
+			write = false;
+			execute = false;
+        }
+
+        // Radio button for frame breakpoint
+        ImGui::RadioButton("Frame", frame);
+
+        // Radio button for instruction breakpoint
+        ImGui::RadioButton("Instruction", instruction);
+
+        // Radio button for read breakpoint
+        ImGui::RadioButton("Read", read);
+
+        // Radio button for write breakpoint
+        ImGui::RadioButton("Write", write);
+
+        // Radio button for execute breakpoint
+        ImGui::RadioButton("Execute", execute);
+
+        // Add the breakpoint
+        if (ImGui::Button("Add"))
+        {
+			// Convert the input to an integer
+			uint16_t value = std::stoi(input, nullptr, 16);
+
+            breakpoint_type_t type;
+
+            if (cycle)
+            {
+				type = BREAKPOINT_TYPE_CYCLE;
+			}
+            else
+            {
+				type = BREAKPOINT_TYPE_ADDRESS;
+			}
+
+			emulator->add_breakpoint(type, value);
+
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+    }
+
+	ImGui::End();
 }
 
 void Window::render_menu_bar(Emulator& emulator)

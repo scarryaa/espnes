@@ -11,6 +11,7 @@ X = []
 Y = []
 P = []
 Opcode = []
+CYC = []
 
 with open(first_file) as f:
     for line in f:
