@@ -229,7 +229,6 @@ void Emulator::log_cpu()
 
      /*log in format C009  AD 02 20  LDA $2002 = 80                  A:00 X:FF Y:00 P:A4 SP:FF CYC:15*/
     log_file << buffer;
-    log_file << "                             ";
     log_file << "A:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_A() << " ";
     log_file << "X:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_X() << " ";
     log_file << "Y:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_Y() << " ";
