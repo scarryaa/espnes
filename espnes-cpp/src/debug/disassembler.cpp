@@ -1,8 +1,9 @@
-#include "../../include/cpu.hpp"
-#include "../../include/memory.hpp"
-#include "../../include/debug/disassembler.hpp"
+#include <string>
+#include "../include/cpu.hpp"
+#include "../include/memory.hpp"
+#include "../include/debug/disassembler.hpp"
 
-Disassembler::Disassembler(CPU *cpu, Memory *memory)
+Disassembler::Disassembler(CPU* cpu, Memory* memory)
 {
     this->cpu = cpu;
     this->memory = memory;
@@ -10,6 +11,33 @@ Disassembler::Disassembler(CPU *cpu, Memory *memory)
 
 Disassembler::~Disassembler()
 {
+}
+
+void Disassembler::get_opcode_info_str(char* buffer, size_t bufferSize) {
+    auto ins = disassemble(cpu->get_PC());
+
+    switch (ins.addressingMode) {
+    case AddressingMode::IMMEDIATE:
+    case AddressingMode::ZERO_PAGE:
+    case AddressingMode::ZERO_PAGE_X:
+    case AddressingMode::ZERO_PAGE_Y:
+    case AddressingMode::INDIRECT_X:
+    case AddressingMode::INDIRECT_Y:
+    case AddressingMode::RELATIVE:
+        snprintf(buffer, bufferSize, "%04X  %02X %02X     %s", ins.address, ins.opcode, ins.operand1, ins.mnemonic);
+        break;
+    case AddressingMode::ABSOLUTE:
+    case AddressingMode::ABSOLUTE_X:
+    case AddressingMode::ABSOLUTE_Y:
+    case AddressingMode::INDIRECT:
+        snprintf(buffer, bufferSize, "%04X  %02X %02X %02X  %s", ins.address, ins.opcode, ins.operand1, ins.operand2, ins.mnemonic);
+        break;
+    case AddressingMode::ACCUMULATOR:
+    case AddressingMode::IMPLIED:
+    default:
+        snprintf(buffer, bufferSize, "%04X  %02X        %s", ins.address, ins.opcode, ins.mnemonic);
+        break;
+    }
 }
 
 Disassembler::Instruction Disassembler::disassemble(uint16_t address)
@@ -28,7 +56,7 @@ Disassembler::Instruction Disassembler::disassemble(uint16_t address)
 
     switch (instruction.addressingMode)
     {
-    // Combine cases that have the same logic
+        // Combine cases that have the same logic
     case AddressingMode::IMMEDIATE:
     case AddressingMode::ZERO_PAGE:
     case AddressingMode::ZERO_PAGE_X:

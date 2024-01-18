@@ -113,12 +113,6 @@
     <ClCompile Include="src\cpu_helpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\debug.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\disassembler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\emulator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

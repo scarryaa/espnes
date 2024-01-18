@@ -63,10 +63,8 @@
     <ClCompile Include="src\cartridge.cpp" />
     <ClCompile Include="src\cpu.cpp" />
     <ClCompile Include="src\cpu_helpers.cpp" />
-    <ClCompile Include="src\debug.cpp" />
     <ClCompile Include="src\debug\debug.cpp" />
     <ClCompile Include="src\debug\disassembler.cpp" />
-    <ClCompile Include="src\disassembler.cpp" />
     <ClCompile Include="src\emulator.cpp" />
     <ClCompile Include="src\imgui\imgui.cpp" />
     <ClCompile Include="src\imgui\imgui_demo.cpp" />

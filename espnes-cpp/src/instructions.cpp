@@ -2469,28 +2469,29 @@ uint8_t Instructions::bne_rel(CPU* cpu, Memory* memory)
 {
     // Get relative address
     int8_t offset = AddressingModes::relative(cpu, memory);
-
-    uint16_t addr = cpu->get_PC() + offset;
+    uint16_t originalPC = cpu->get_PC();
+    uint16_t addr = originalPC + offset;
 
     // Check if zero flag is clear
     if (!cpu->get_Z())
     {
         // Branch
-        cpu->set_PC(addr);
-
         // Add cycles if page boundary is crossed
-        if ((cpu->get_PC() & 0xFF00) != (addr & 0xFF00))
+        if ((originalPC & 0xFF00) != (addr & 0xFF00))
         {
+            cpu->set_PC(addr);
             return 4;
         }
         else
         {
+            cpu->set_PC(addr);
             return 3;
         }
     }
 
     return 2;
 }
+
 
 // 0xD1
 uint8_t Instructions::cmp_ind_y(CPU* cpu, Memory* memory)
@@ -2893,20 +2894,23 @@ uint8_t Instructions::beq_rel(CPU* cpu, Memory* memory)
     if (cpu->get_Z())
     {
         uint16_t oldPC = cpu->get_PC();
-        cpu->set_PC(oldPC + offset);
+        uint16_t newPC = oldPC + static_cast<uint16_t>(offset);
 
         // Add cycle for taking branch
         cycles++;
 
         // Add additional cycle if page boundary is crossed
-        if ((oldPC & 0xFF00) != (cpu->get_PC() & 0xFF00))
+        if ((oldPC & 0xFF00) != (newPC & 0xFF00))
         {
             cycles++;
         }
+
+        cpu->set_PC(newPC);  // Update PC after checking page boundary
     }
 
     return cycles;
 }
+
 
 // 0xF1
 uint8_t Instructions::sbc_ind_y(CPU* cpu, Memory* memory)

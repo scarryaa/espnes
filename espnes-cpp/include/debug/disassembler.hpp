@@ -11,6 +11,7 @@ class Disassembler
 public:
     Disassembler(CPU *cpu, Memory *memory);
     ~Disassembler();
+    void get_opcode_info_str(char* buffer, size_t bufferSize);
 
     enum AddressingMode
     {

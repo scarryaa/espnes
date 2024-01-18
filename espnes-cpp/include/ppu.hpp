@@ -32,6 +32,7 @@ public:
     int get_scanline();
     int get_frame();
     void draw_palette();
+    void set_vblank_flag();
     long get_total_cycles();
 
 private:

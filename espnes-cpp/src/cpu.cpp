@@ -192,6 +192,13 @@ long CPU::get_total_cycles()
 	return total_cycles;
 }
 
+uint8_t CPU::fetch_next_opcode_cycles() {
+    // Decode current opcode to get bytes
+    uint8_t opcode = memory->read(PC);
+    return opcode_cycles[opcode];
+
+}
+
 int CPU::run()
 {
     uint8_t irq_cycles = 0;

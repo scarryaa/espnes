@@ -1,3 +1,4 @@
+#include <string>
 #include "../include/emulator.hpp"
 
 Emulator::Emulator() : cpu(&memory), ppu(), apu(), window(), cartridge(), memory(&ppu, &apu, &cartridge), disassembler(&cpu, &memory), quit(false), paused(false)
@@ -190,6 +191,13 @@ void Emulator::run()
             //log cpu
             log_cpu();
 
+            uint8_t tmp_cycles = cpu.fetch_next_opcode_cycles();
+            // if adding cycles would cause scanline 241 cycle 1 to be executed, set vblank flag
+            if (ppu.get_scanline() == 240 && ppu.get_cycle() + tmp_cycles >= 341)
+            {
+                ppu.set_vblank_flag();
+            }
+
             cycles = cpu.run();
 
             cycles_to_run -= cycles;
@@ -216,11 +224,12 @@ void Emulator::close_log_file()
 
 void Emulator::log_cpu()
 {
+    char buffer[256];
+    disassembler.get_opcode_info_str(buffer, sizeof(buffer));
+
      /*log in format C009  AD 02 20  LDA $2002 = 80                  A:00 X:FF Y:00 P:A4 SP:FF CYC:15*/
-    log_file << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << cpu.get_PC() << "  ";
-    log_file << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_current_opcode() << "  ";
-    log_file << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)memory.read(cpu.get_PC() + 1) << "  ";
-    log_file << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)memory.read(cpu.get_PC() + 2) << "  ";
+    log_file << buffer;
+    log_file << "                             ";
     log_file << "A:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_A() << " ";
     log_file << "X:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_X() << " ";
     log_file << "Y:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_Y() << " ";

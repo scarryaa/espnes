@@ -11,7 +11,7 @@ PPU::PPU() : cycles(0), scanline(0), frame(0), total_cycles(7), control(0), mask
     frame = 0;
     total_cycles = 7;
     old_frame = 500;
-    this->status |= 0x80;
+    this->status = 0;
     
     for (int i = 0; i < 0x2000; i++)
     {
@@ -301,6 +301,11 @@ void PPU::load(uint8_t* rom, uint32_t size)
     }
 }
 
+void PPU::set_vblank_flag()
+{
+	this->status |= 0x80;
+}
+
 void PPU::step(int cycles)
 {
     this->cycles += cycles;
@@ -315,6 +320,7 @@ void PPU::step(int cycles)
     // Pre-render scanline
     if (this->scanline == SCANLINES)
     {
+        nmi_triggered = false;
         // Clear VBlank flag
         this->status &= ~0x80;
 
