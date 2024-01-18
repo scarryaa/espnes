@@ -25,17 +25,24 @@ uint8_t Interrupt::handle_interrupt(InterruptType type, CPU* cpu, Memory* memory
 
 void Interrupt::handle_nmi(CPU* cpu, Memory* memory)
 {
-    // Push PC onto stack
-    memory->write(cpu->get_SP(), (cpu->get_PC() >> 8) & 0xFF);
-    cpu->set_SP(cpu->get_SP() - 1);
-    memory->write(cpu->get_SP(), cpu->get_PC() & 0xFF);
-    cpu->set_SP(cpu->get_SP() - 1);
+    uint16_t pc = cpu->get_PC();
+    uint8_t p = cpu->get_P() | CPU::FLAG_BREAK;
 
-    // Push P onto stack with B flag set
-    memory->write(cpu->get_SP(), cpu->get_P() | CPU::FLAG_BREAK);
+    // Decrement SP, then push high byte of PC
+    cpu->set_SP(cpu->get_SP() - 1);
+    memory->write(cpu->get_SP(), (pc >> 8) & 0xFF);
+
+    cpu->set_SP(cpu->get_SP() - 1);
+    memory->write(cpu->get_SP(), pc & 0xFF);
+
+    // Decrement SP, then push P with B flag set
+    cpu->set_SP(cpu->get_SP() - 1);
+    memory->write(cpu->get_SP(), p);
 
     // Set PC to NMI vector
+    Debug::debug_print("PC before NMI: 0x%04X", cpu->get_PC());
     cpu->set_PC(memory->read(CPU::NMI_VECTOR) | (memory->read(CPU::NMI_VECTOR + 1) << 8));
+    Debug::debug_print("PC after NMI: 0x%04X", cpu->get_PC());
 }
 
 void Interrupt::handle_brk(CPU* cpu, Memory* memory)

@@ -6,7 +6,11 @@ PPU::PPU() : cycles(0), scanline(0), frame(0), total_cycles(7), control(0), mask
     vram = new uint8_t[0x2000];
     oam = new uint8_t[0x100];
     palette = new uint8_t[0x40];
-    cycles = 0;
+    cycles = 21;
+    scanline = 0;
+    frame = 0;
+    total_cycles = 7;
+    old_frame = 500;
     this->status |= 0x80;
     
     for (int i = 0; i < 0x2000; i++)
@@ -19,6 +23,17 @@ PPU::PPU() : cycles(0), scanline(0), frame(0), total_cycles(7), control(0), mask
         frame_buffer[i] = 0;
     }
 
+    for (int i = 0; i < 0x100; i++)
+    {
+        oam[i] = 0;
+    }
+
+    for (int i = 0; i < 0x40; i++)
+    {
+		palette[i] = 0;
+	}
+
+    this->oam_dma = 0;
     this->vram_address = 0;
 }
 
@@ -61,10 +76,10 @@ uint8_t* PPU::get_palette()
 
 void PPU::reset()
 {
-    this->cycles = 0;
+    this->cycles = 21;
     this->scanline = 0;
     this->frame = 0;
-    this->total_cycles = 0;
+    this->total_cycles = 7;
     this->control = 0;
     this->mask = 0;
     this->status = 0;
@@ -77,12 +92,56 @@ void PPU::reset()
     this->oam_dma = 0;
     this->NMI_occurred = 0;
     this->prev_read = 0;
+    this->old_frame = 500;
 
     // Clear frame buffer
     for (int i = 0; i < XRES * YRES * COLOR_DEPTH; i++)
     {
         frame_buffer[i] = 0;
     }
+
+    // Clear VRAM
+    for (int i = 0; i < 0x2000; i++)
+    {
+		vram[i] = 0;
+	}
+
+    // Clear OAM
+    for (int i = 0; i < 0x100; i++)
+    {
+		oam[i] = 0;
+	}
+
+	// Clear palette
+    for (int i = 0; i < 0x40; i++)
+    {
+		palette[i] = 0;
+	}
+
+	// Clear OAMDMA
+	this->oam_dma = 0;
+
+    // Clear NMI
+	this->NMI_occurred = 0;
+
+    // Clear NMI triggered
+    this->nmi_triggered = 0;
+
+    // Clear write toggle
+    this->write_toggle = 0;
+
+    // Clear VRAM address
+    this->vram_address = 0;
+
+    // Clear OAM address
+    this->oam_address = 0;
+
+    // Clear OAM data
+    this->oam_data = 0;
+
+    // Clear scroll
+    this->scroll_x = 0;
+    this->scroll_y = 0;
 }
 
 void PPU::set_cpu(CPU& cpu)
@@ -253,40 +312,38 @@ void PPU::step(int cycles)
         this->scanline++;
     }
 
-    if (this->scanline == SCANLINES + 1)
-    {
-        this->scanline = 0;
-        //draw_name_table(0);
-        this->frame++;
-    }
-
-    // VBlank
-    if (this->scanline == VBLANK_SCANLINE)
-    {
-        // Set VBlank flag
-        this->status |= 0x80;
-
-        // Trigger NMI
-        this->NMI_occurred = 1;
-
-        // Trigger NMI if NMI_occured is true and NMI is enabled
-        if (this->NMI_occurred && (this->control & 0x80))
-        {
-            // Trigger NMI
-            this->cpu->set_interrupt(InterruptType::NMI);
-
-            this->NMI_occurred = 0;
-        }
-    }
-
     // Pre-render scanline
-    else if (this->scanline == SCANLINES)
+    if (this->scanline == SCANLINES)
     {
         // Clear VBlank flag
         this->status &= ~0x80;
 
         // Clear NMI
         this->NMI_occurred = 0;
+
+        this->scanline = 0;
+        this->frame++;
+    }
+
+    // VBlank
+    if (this->scanline == VBLANK_SCANLINE && nmi_triggered == false && this->old_frame != this->frame)
+    {
+        // Set VBlank flag
+        this->status |= 0x80;
+
+        old_frame = this->frame;
+
+        // Trigger NMI
+        this->NMI_occurred = 1;
+
+        // Trigger NMI if NMI_occured is true and NMI is enabled
+        if (this->NMI_occurred && (this->control & 0x80) != 0 && !this->nmi_triggered)
+        {
+            // Trigger NMI
+            this->cpu->set_interrupt(InterruptType::NMI);
+            this->nmi_triggered = true;
+            this->NMI_occurred = 0;
+        }
     }
 
     for (int i = 0; i < 32; i++)
@@ -358,24 +415,32 @@ void PPU::draw_name_table(int nameTableIndex)
 {
     uint16_t baseAddr = nameTableIndex == 0 ? 0x2000 : 0x2400;
 
-    for (int row = 0; row < 30; ++row)
-    { // 30 tiles per column
-        for (int col = 0; col < 32; ++col)
-        {                                                                   // 32 tiles per row
-            uint16_t tileIndex = vram[baseAddr + row * 32 + col];           // Get tile index
-            uint16_t tileAddr = 0x1000 * (control & 0x10) + 16 * tileIndex; // Get tile address in the pattern table
+    for (int row = 0; row < 30; ++row) { // 30 tiles per column
+        for (int col = 0; col < 32; ++col) { // 32 tiles per row
+            uint16_t tileIndex = vram[baseAddr + row * 32 + col]; // Get tile index
+            uint16_t tileAddr = 0x1000 * (control & 0x10) + 16 * tileIndex; // Get tile address
 
-            for (int tileRow = 0; tileRow < 8; ++tileRow)
-            { // Each tile is 8x8 pixels
-                uint8_t lo = vram[tileAddr + tileRow];
-                uint8_t hi = vram[tileAddr + tileRow + 8];
+            // Get tile data
+            uint8_t* tileData = &chr_rom[tileAddr];
 
-                for (int tileCol = 0; tileCol < 8; ++tileCol)
-                {
-                    uint8_t colorIndex = ((hi >> (7 - tileCol)) & 1) << 1 | ((lo >> (7 - tileCol)) & 1);
-                    // Fetch color from palette
-                    uint32_t color = PaletteLUT_2C04_0001[palette[colorIndex]];
-                    draw_pixel(col * 8 + tileCol, row * 8 + tileRow, color);
+            // Calculate attribute table address for the tile
+            uint16_t attrTableAddr = baseAddr + 0x3C0 + (row / 4) * 8 + (col / 4);
+            uint8_t attrByte = vram[attrTableAddr];
+
+            // Determine which 2-bit palette number to use from the attribute byte
+            int paletteShift = ((row % 4) / 2 * 2 + (col % 4) / 2 * 4);
+            uint8_t paletteIndex = (attrByte >> paletteShift) & 0x03;
+
+            // Draw tile
+            for (int y = 0; y < 8; ++y) {
+                uint8_t lo = tileData[y];
+                uint8_t hi = tileData[y + 8];
+
+                for (int x = 0; x < 8; ++x) {
+                    uint8_t colorIndex = ((hi >> (7 - x)) & 0x1) << 1 | ((lo >> (7 - x)) & 0x1);
+                    uint8_t paletteAddr = 0x3F00 + paletteIndex * 4 + colorIndex;
+                    uint16_t color = PaletteLUT_2C04_0001[palette[paletteAddr]];
+                    draw_pixel(col * 8 + x, row * 8 + y, color);
                 }
             }
         }

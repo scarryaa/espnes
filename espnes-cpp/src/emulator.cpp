@@ -179,7 +179,7 @@ void Emulator::run()
 
         window.render(this);
 
-        uint8_t cycles = 0;
+        uint8_t cycles = 7;
         while (cycles_to_run > 0)
         {
             if (paused)
@@ -188,7 +188,7 @@ void Emulator::run()
             }
 
             //log cpu
-            //log_cpu();
+            log_cpu();
 
             cycles = cpu.run();
 
@@ -226,7 +226,8 @@ void Emulator::log_cpu()
     log_file << "Y:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_Y() << " ";
     log_file << "P:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_P() << " ";
     log_file << "SP:" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << (int)cpu.get_SP() << " ";
-    log_file << "CYC:" << std::dec << std::uppercase << std::setfill('0') << std::setw(3) << ppu.get_total_cycles() << "\n";
+    log_file << "CYC:" << std::dec << std::uppercase << std::setfill('0') << std::setw(3) << ppu.get_total_cycles() << " ";
+    log_file << "PPU: " << std::dec << std::uppercase << std::setfill('0') << std::setw(3) << ppu.get_scanline() << ", " << std::dec << std::uppercase << std::setfill('0') << std::setw(3) << ppu.get_cycle() << "\n";
     log_file.flush();
 }
 

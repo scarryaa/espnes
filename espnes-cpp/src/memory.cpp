@@ -5,6 +5,21 @@ Memory::Memory(PPU* ppu, APU* apu, Cartridge* cartridge) : ppu(ppu), apu(apu), c
     memory = new uint8_t[0x10000];
     ram = new uint8_t[0x800];
     stack = new uint8_t[0x100];
+
+    for (int i = 0; i < 0x10000; i++)
+    {
+		memory[i] = 0;
+	}
+
+    for (int i = 0; i < 0x800; i++)
+    {
+		ram[i] = 0;
+	}
+
+    for (int i = 0; i < 0x100; i++)
+    {
+		stack[i] = 0;
+	}
 }
 
 Memory::~Memory()

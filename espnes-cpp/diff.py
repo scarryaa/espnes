@@ -22,8 +22,9 @@ with open(first_file) as f:
         Y.append(line[30:32])
         P.append(line[35:37])
         Opcode.append(line[6:8])
+        CYC.append(line[48:51])
 
-#extract C7A8  AD 02 20  LDA $2002 = FF                  A:10 X:FF Y:00 P:A4 SP:FF PPU:  0, 63 CYC:21
+#extract C7A8  AD 02 20  LDA $2002 = FF                  A:10 X:FF Y:00 P:A4 SP:FF CYC:021
 PC2 = []
 SP2 = []
 A2 = []
@@ -31,6 +32,7 @@ X2 = []
 Y2 = []
 P2 = []
 Opcode2 = []
+CYC2 = []
 
 with open(second_file) as f:
     for line in f:
@@ -41,6 +43,7 @@ with open(second_file) as f:
         Y2.append(line[60:62])
         P2.append(line[65:67])
         Opcode2.append(line[6:8])
+        CYC2.append(line[78:81])
 
 # compare
 i = 0

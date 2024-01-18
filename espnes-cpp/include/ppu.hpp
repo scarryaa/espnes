@@ -55,6 +55,8 @@ private:
     int cycles;
     long total_cycles;
     int scanline;
+    bool nmi_triggered;
+    uint8_t old_frame;
     uint8_t NMI_occurred;
     uint8_t frame;
     uint8_t write_toggle;
