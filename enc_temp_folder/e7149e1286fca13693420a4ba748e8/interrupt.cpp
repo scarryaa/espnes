@@ -26,24 +26,24 @@ uint8_t Interrupt::handle_interrupt(InterruptType type, CPU* cpu, Memory* memory
 void Interrupt::handle_nmi(CPU* cpu, Memory* memory)
 {
     uint16_t pc = cpu->get_PC();
-    uint8_t p = cpu->get_P() | 0x20;
+    uint8_t p = cpu->get_P() | CPU::FLAG_BREAK;
 
-    // Push high byte of PC
+    // Decrement SP, then push high byte of PC
     cpu->set_SP(cpu->get_SP() - 1);
-    memory->write(0x0100 + cpu->get_SP(), (pc >> 8) & 0xFF);
+    memory->write(cpu->get_SP(), (pc >> 8) & 0xFF);
 
-    // Push low byte of PC
     cpu->set_SP(cpu->get_SP() - 1);
-    memory->write(0x0100 + cpu->get_SP(), pc & 0xFF);
+    memory->write(cpu->get_SP(), pc & 0xFF);
 
-    // Push processor status (P) with a constant
+    // Decrement SP, then push P with B flag set
     cpu->set_SP(cpu->get_SP() - 1);
-    memory->write(0x0100 + cpu->get_SP(), p);
+    memory->write(cpu->get_SP(), p);
 
     // Set PC to NMI vector
+    Debug::debug_print("PC before NMI: 0x%04X", cpu->get_PC());
     cpu->set_PC(memory->read(CPU::NMI_VECTOR) | (memory->read(CPU::NMI_VECTOR + 1) << 8));
+    Debug::debug_print("PC after NMI: 0x%04X", cpu->get_PC());
 }
-
 
 void Interrupt::handle_brk(CPU* cpu, Memory* memory)
 {
@@ -51,19 +51,17 @@ void Interrupt::handle_brk(CPU* cpu, Memory* memory)
     cpu->set_P(cpu->get_P() | CPU::FLAG_INTERRUPT_DISABLE);
 
     // Push PC onto stack
+    memory->write(cpu->get_SP(), (cpu->get_PC() >> 8) & 0xFF);
     cpu->set_SP(cpu->get_SP() - 1);
-    memory->write(0x0100 + cpu->get_SP(), (cpu->get_PC() >> 8) & 0xFF);
+    memory->write(cpu->get_SP(), cpu->get_PC() & 0xFF);
     cpu->set_SP(cpu->get_SP() - 1);
-    memory->write(0x0100 + cpu->get_SP(), cpu->get_PC() & 0xFF);
 
     // Push P onto stack with B and U flags set
-    cpu->set_SP(cpu->get_SP() - 1);
-    memory->write(0x0100 + cpu->get_SP(), cpu->get_P() | CPU::FLAG_BREAK | CPU::FLAG_UNUSED);
+    memory->write(cpu->get_SP(), cpu->get_P() | CPU::FLAG_BREAK | CPU::FLAG_UNUSED);
 
-    // Set PC to IRQ
+    // Set PC to IRQ vector
     cpu->set_PC(memory->read(CPU::IRQ_VECTOR) | (memory->read(CPU::IRQ_VECTOR + 1) << 8));
 }
-
 
 void Interrupt::handle_irq(CPU* cpu, Memory* memory)
 {
@@ -74,14 +72,13 @@ void Interrupt::handle_irq(CPU* cpu, Memory* memory)
         cpu->set_P(cpu->get_P() | CPU::FLAG_INTERRUPT_DISABLE);
 
         // Push PC onto stack
+        memory->write(cpu->get_SP(), (cpu->get_PC() >> 8) & 0xFF);
         cpu->set_SP(cpu->get_SP() - 1);
-        memory->write(0x0100 + cpu->get_SP(), (cpu->get_PC() >> 8) & 0xFF);
+        memory->write(cpu->get_SP(), cpu->get_PC() & 0xFF);
         cpu->set_SP(cpu->get_SP() - 1);
-        memory->write(0x0100 + cpu->get_SP(), cpu->get_PC() & 0xFF);
 
         // Push P onto stack with B unset
-        cpu->set_SP(cpu->get_SP() - 1);
-        memory->write(0x0100 + cpu->get_SP(), cpu->get_P() & ~CPU::FLAG_BREAK);
+        memory->write(cpu->get_SP(), cpu->get_P() & ~CPU::FLAG_BREAK);
 
         // Set PC to IRQ vector
         cpu->set_PC(memory->read(CPU::IRQ_VECTOR) | (memory->read(CPU::IRQ_VECTOR + 1) << 8));

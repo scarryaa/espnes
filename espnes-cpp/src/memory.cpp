@@ -1,6 +1,7 @@
 #include "../include/memory.hpp"
+#include <emulator.hpp>
 
-Memory::Memory(PPU* ppu, APU* apu, Cartridge* cartridge, Controller *controller) : ppu(ppu), apu(apu), cartridge(cartridge), controller(controller)
+Memory::Memory(PPU * ppu, APU* apu, Cartridge* cartridge, Controller *controller) : ppu(ppu), apu(apu), cartridge(cartridge), controller(controller)
 {
     memory = new uint8_t[0x10000];
     ram = new uint8_t[0x800];
@@ -27,6 +28,11 @@ Memory::~Memory()
     delete[] memory;
     delete[] ram;
     delete[] stack;
+}
+
+void Memory::set_emulator(Emulator* emulator)
+{
+	this->emulator = emulator;
 }
 
 uint8_t Memory::read(uint16_t address, bool resetStatus)
@@ -84,6 +90,17 @@ uint8_t Memory::read(uint16_t address, bool resetStatus)
 
 void Memory::write(uint16_t address, uint8_t value)
 {
+    if (address == 0xFA && value == 0x36)
+    {
+        printf("0xD0\n");
+    }
+
+    // Check for write breakpoints
+    if (emulator->is_breakpoint(BREAKPOINT_TYPE_WRITE, address))
+    {
+		emulator->pause();
+	}
+
     // Write to stack
     if (address >= 0x100 && address <= 0x1FF)
     {

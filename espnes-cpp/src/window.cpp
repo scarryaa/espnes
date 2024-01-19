@@ -422,6 +422,19 @@ void Window::render_breakpoints(Emulator* emulator)
         // Radio button for write breakpoint
         ImGui::RadioButton("Write", write);
 
+        if (ImGui::IsItemClicked())
+        {
+            write = true;
+
+            // Clear the other radio buttons
+            scanline = false;
+            cycle = false;
+            frame = false;
+            instruction = false;
+            read = false;
+            execute = false;
+        }
+
         // Radio button for execute breakpoint
         ImGui::RadioButton("Execute", execute);
 
@@ -437,9 +450,17 @@ void Window::render_breakpoints(Emulator* emulator)
             {
 				type = BREAKPOINT_TYPE_CYCLE;
 			}
-            else
+            else if (instruction)
             {
-				type = BREAKPOINT_TYPE_ADDRESS;
+                type = BREAKPOINT_TYPE_EXECUTION;
+            }
+            else if (write)
+            {
+				type = BREAKPOINT_TYPE_WRITE;
+			}
+			else
+			{
+                type = BREAKPOINT_TYPE_ADDRESS;
 			}
 
 			emulator->add_breakpoint(type, value);

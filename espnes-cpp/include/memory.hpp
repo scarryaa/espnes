@@ -10,6 +10,8 @@
 #include "debug/debug.hpp"
 #include <string>
 
+class Emulator;
+
 class Memory
 {
 public:
@@ -19,6 +21,7 @@ public:
     uint8_t read(uint16_t address, bool resetStatus = true);
     void write(uint16_t address, uint8_t value);
     void load(uint8_t *rom, uint32_t size);
+    void set_emulator(Emulator *emulator);
 
 private:
     uint8_t *memory;
@@ -29,6 +32,7 @@ private:
     APU *apu;
     Cartridge *cartridge;
     Controller *controller;
+    Emulator *emulator;
 };
 
 #endif
