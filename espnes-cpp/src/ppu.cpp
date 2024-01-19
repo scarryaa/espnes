@@ -154,7 +154,7 @@ uint8_t* PPU::get_frame_buffer()
     return frame_buffer;
 }
 
-uint8_t PPU::read(uint16_t address)
+uint8_t PPU::read(uint16_t address, bool resetStatus)
 {
     uint8_t register_index = address & 7;
     uint8_t old_NMI = this->NMI_occurred;
@@ -172,6 +172,12 @@ uint8_t PPU::read(uint16_t address)
         return this->mask;
     case 2:
     {
+        if (!resetStatus)
+        {
+            // Return status without clearing VBlank flag or NMI
+            return (current_status & 0xE0) | (prev_read & 0x1F);
+        }
+
         // PPUSTATUS
         this->write_toggle = 0; // Reading status resets write toggle
 
@@ -318,7 +324,7 @@ void PPU::step(int cycles)
     }
 
     // Pre-render scanline
-    if (this->scanline == SCANLINES)
+    if (this->scanline == SCANLINES + 1)
     {
         nmi_triggered = false;
         // Clear VBlank flag

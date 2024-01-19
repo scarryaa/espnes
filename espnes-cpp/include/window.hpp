@@ -9,7 +9,7 @@
 #include "imgui/imgui_impl_sdlrenderer2.h"
 #include "debug/disassembler.hpp"
 #include <iostream>
-#include "../include/breakpoint_types.h"
+#include "../include/breakpoint_types.hpp"
 
 class Emulator;
 

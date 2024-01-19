@@ -3,7 +3,7 @@ import sys
 first_file = sys.argv[1]
 second_file = sys.argv[2]
 
-# extract C004  78  D8  A2  A:00 X:00 Y:00 P:24 SP:FD CYC:007
+# extract C7AD  F0 F9     BEQ $F9                           A:00 X:FF Y:00 P:26 SP:FF CYC:27369 PPU: 240, 267
 PC = []
 SP = []
 A = []
@@ -16,11 +16,11 @@ CYC = []
 with open(first_file) as f:
 	for line in f:
 		PC.append(line[0:4])
-		SP.append(line[41:43])
-		A.append(line[20:22])
-		X.append(line[25:27])
-		Y.append(line[30:32])
-		P.append(line[35:37])
+		SP.append(line[73:75])
+		A.append(line[52:54])
+		X.append(line[57:59])
+		Y.append(line[62:64])
+		P.append(line[67:69])
 		Opcode.append(line[6:8])
 		CYC.append(line[48:51])
 

@@ -8,13 +8,14 @@
 #include "cartridge.hpp"
 #include "debug/debug.hpp"
 #include "debug/disassembler.hpp"
+#include "controller.hpp"
 #include "apu.hpp"
 #include "ppu.hpp"
 #include <functional>
 #include <chrono>
 #include <iostream>
 #include <vector>
-#include "../include/breakpoint_types.h"
+#include "../include/breakpoint_types.hpp"
 
 class Emulator
 {
@@ -55,6 +56,7 @@ private:
     Memory memory;
     PPU ppu;
     APU apu;
+    Controller controller;
     Disassembler disassembler;
 
     bool quit;

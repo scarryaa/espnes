@@ -1,7 +1,7 @@
 #include <string>
 #include "../include/emulator.hpp"
 
-Emulator::Emulator() : cpu(&memory), ppu(), apu(), window(), cartridge(), memory(&ppu, &apu, &cartridge), disassembler(&cpu, &memory), quit(false), paused(false)
+Emulator::Emulator() : cpu(&memory), ppu(), apu(), window(), cartridge(), memory(&ppu, &apu, &cartridge, &controller), disassembler(&cpu, &memory), quit(false), paused(false)
 {
     ppu.set_cpu(cpu);
 }
@@ -193,7 +193,7 @@ void Emulator::run()
 
             uint8_t tmp_cycles = cpu.fetch_next_opcode_cycles();
             // if adding cycles would cause scanline 241 cycle 1 to be executed, set vblank flag
-            if (ppu.get_scanline() == 240 && ppu.get_cycle() + tmp_cycles >= 341)
+            if (ppu.get_scanline() == 240 && ppu.get_cycle() + tmp_cycles >= 330)
             {
                 ppu.set_vblank_flag();
             }

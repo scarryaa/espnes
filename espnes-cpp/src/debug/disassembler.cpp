@@ -21,34 +21,34 @@ void Disassembler::get_opcode_info_str(char* buffer, size_t bufferSize) {
             sprintf_s(buffer, bufferSize, "%04X  %02X %02X     %s #$%02X                          ", ins.address, ins.opcode, ins.operand1, ins.mnemonic, ins.operand1);
             break;
         case AddressingMode::ZERO_PAGE:
-            sprintf_s(buffer, bufferSize, "%04X  %02X %02X     %s $%02X                           ", ins.address, ins.opcode, ins.operand1, ins.mnemonic, ins.operand1);
+            sprintf_s(buffer, bufferSize, "%04X  %02X %02X     %s $%02X = %02X                      ", ins.address, ins.opcode, ins.operand1, ins.mnemonic, ins.operand1, memory->read(ins.operand1, false));
             break;
         case AddressingMode::ZERO_PAGE_X:
-            sprintf_s(buffer, bufferSize, "%04X  %02X %02X     %s $%02X,X @ %02X = %02X               ", ins.address, ins.opcode, ins.operand1, ins.mnemonic, ins.operand1, (ins.operand1 + cpu->get_X()) & 0xFF, memory->read((ins.operand1 + cpu->get_X()) & 0xFF));
+            sprintf_s(buffer, bufferSize, "%04X  %02X %02X     %s $%02X,X @ %02X = %02X               ", ins.address, ins.opcode, ins.operand1, ins.mnemonic, ins.operand1, (ins.operand1 + cpu->get_X()) & 0xFF, memory->read((ins.operand1 + cpu->get_X()) & 0xFF, false));
             break;
         case AddressingMode::ZERO_PAGE_Y:
-            sprintf_s(buffer, bufferSize, "%04X  %02X %02X     %s $%02X,Y @ %02X = %02X               ", ins.address, ins.opcode, ins.operand1, ins.mnemonic, ins.operand1, (ins.operand1 + cpu->get_Y()) & 0xFF, memory->read((ins.operand1 + cpu->get_Y()) & 0xFF));
+            sprintf_s(buffer, bufferSize, "%04X  %02X %02X     %s $%02X,Y @ %02X = %02X               ", ins.address, ins.opcode, ins.operand1, ins.mnemonic, ins.operand1, (ins.operand1 + cpu->get_Y()) & 0xFF, memory->read((ins.operand1 + cpu->get_Y()) & 0xFF, false));
             break;
         case AddressingMode::INDIRECT_X:
-            sprintf_s(buffer, bufferSize, "%04X  %02X %02X     %s ($%02X,X) @ %02X = %02X             ", ins.address, ins.opcode, ins.operand1, ins.mnemonic, ins.operand1, (ins.operand1 + cpu->get_X()) & 0xFF, memory->read((ins.operand1 + cpu->get_X()) & 0xFF));
+            sprintf_s(buffer, bufferSize, "%04X  %02X %02X     %s ($%02X,X) @ %02X = %02X             ", ins.address, ins.opcode, ins.operand1, ins.mnemonic, ins.operand1, (ins.operand1 + cpu->get_X()) & 0xFF, memory->read((ins.operand1 + cpu->get_X()) & 0xFF, false));
             break;
         case AddressingMode::INDIRECT_Y:
-            sprintf_s(buffer, bufferSize, "%04X  %02X %02X     %s ($%02X),Y = %02X @ %02X = %02X        ", ins.address, ins.opcode, ins.operand1, ins.mnemonic, ins.operand1, memory->read(ins.operand1) + cpu->get_Y(), memory->read(ins.operand1) + cpu->get_Y(), memory->read(memory->read(ins.operand1) + cpu->get_Y()));
+            sprintf_s(buffer, bufferSize, "%04X  %02X %02X     %s ($%02X),Y = %02X @ %02X = %02X        ", ins.address, ins.opcode, ins.operand1, ins.mnemonic, ins.operand1, memory->read(ins.operand1) + cpu->get_Y(), memory->read(ins.operand1) + cpu->get_Y(), memory->read(memory->read(ins.operand1) + cpu->get_Y(), false));
             break;
         case AddressingMode::RELATIVE:
             sprintf_s(buffer, bufferSize, "%04X  %02X %02X     %s $%02X                           ", ins.address, ins.opcode, ins.operand1, ins.mnemonic, ins.operand1);
             break;
         case AddressingMode::ABSOLUTE:
-            sprintf_s(buffer, bufferSize, "%04X  %02X %02X %02X  %s $%02X%02X  = %02X                   ", ins.address, ins.opcode, ins.operand1, ins.operand2, ins.mnemonic, ins.operand2, ins.operand1, memory->read((ins.operand2 << 8) | ins.operand1));
+            sprintf_s(buffer, bufferSize, "%04X  %02X %02X %02X  %s $%02X%02X  = %02X                   ", ins.address, ins.opcode, ins.operand1, ins.operand2, ins.mnemonic, ins.operand2, ins.operand1, memory->read((ins.operand2 << 8) | ins.operand1, false));
             break;
         case AddressingMode::ABSOLUTE_X:
-            sprintf_s(buffer, bufferSize, "%04X  %02X %02X %02X  %s $%02X%02X,X @ %02X%02X = %02X           ", ins.address, ins.opcode, ins.operand1, ins.operand2, ins.mnemonic, ins.operand2, ins.operand1, ins.operand2, ins.operand1, memory->read((ins.operand2 << 8) | ins.operand1));
+            sprintf_s(buffer, bufferSize, "%04X  %02X %02X %02X  %s $%02X%02X,X @ %02X%02X = %02X           ", ins.address, ins.opcode, ins.operand1, ins.operand2, ins.mnemonic, ins.operand2, ins.operand1, ins.operand2, ins.operand1, memory->read((ins.operand2 << 8) | ins.operand1, false));
             break;
         case AddressingMode::ABSOLUTE_Y:
-            sprintf_s(buffer, bufferSize, "%04X  %02X %02X %02X  %s $%02X%02X,Y @ %02X%02X = %02X           ", ins.address, ins.opcode, ins.operand1, ins.operand2, ins.mnemonic, ins.operand2, ins.operand1, ins.operand2, ins.operand1, memory->read((ins.operand2 << 8) | ins.operand1));
+            sprintf_s(buffer, bufferSize, "%04X  %02X %02X %02X  %s $%02X%02X,Y @ %02X%02X = %02X           ", ins.address, ins.opcode, ins.operand1, ins.operand2, ins.mnemonic, ins.operand2, ins.operand1, ins.operand2, ins.operand1, memory->read((ins.operand2 << 8) | ins.operand1, false));
             break;
         case AddressingMode::INDIRECT:
-            sprintf_s(buffer, bufferSize, "%04X  %02X %02X %02X  %s ($%02X%02X) = %02X                  ", ins.address, ins.opcode, ins.operand1, ins.operand2, ins.mnemonic, ins.operand2, ins.operand1, memory->read((ins.operand2 << 8) | ins.operand1));
+            sprintf_s(buffer, bufferSize, "%04X  %02X %02X %02X  %s ($%02X%02X) = %02X                  ", ins.address, ins.opcode, ins.operand1, ins.operand2, ins.mnemonic, ins.operand2, ins.operand1, memory->read((ins.operand2 << 8) | ins.operand1, false));
             break;
         case AddressingMode::ACCUMULATOR:
             sprintf_s(buffer, bufferSize, "%04X  %02X        %s A                             ", ins.address, ins.opcode, ins.mnemonic);

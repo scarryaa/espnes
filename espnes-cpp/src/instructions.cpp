@@ -1190,17 +1190,19 @@ uint8_t Instructions::adc_zpg(CPU* cpu, Memory* memory)
     // Get value at the address
     uint8_t val = memory->read(zpg_addr);
 
-    // Add value to A
-    uint16_t result = cpu->get_A() + val + cpu->get_C();
+    uint8_t originalA = cpu->get_A();
+    uint16_t result = originalA + val + cpu->get_C();
 
-    // Set A to result
-    cpu->set_A(result);
+    cpu->set_A(result & 0xFF);
 
     // Set flags
     cpu->set_C(result > 0xFF);
-    cpu->set_Z(result == 0);
+    cpu->set_Z((result & 0xFF) == 0);
     cpu->set_N(result & 0x80);
-    cpu->set_V((cpu->get_A() ^ val) & (cpu->get_A() ^ result) & 0x80);
+    cpu->set_V(((originalA ^ (result & 0xFF)) & (val ^ (result & 0xFF)) & 0x80) != 0);
+
+    return 3;
+
 
     return 3;
 }
@@ -2206,28 +2208,20 @@ uint8_t Instructions::ldy_abs_x(CPU* cpu, Memory* memory)
 // 0xBD
 uint8_t Instructions::lda_abs_x(CPU* cpu, Memory* memory)
 {
-    bool page_crossed = false;
     // Get absolute address and add X register to it
+    bool page_crossed = false;
     uint16_t addr = AddressingModes::absolute_x(cpu, memory, &page_crossed);
-
-    // Get value at the address
     uint8_t val = memory->read(addr);
 
-    // Set A to value
     cpu->set_A(val);
 
-    // Set flags
-    cpu->set_Z(cpu->get_A() == 0);
-    cpu->set_N(cpu->get_A() & 0x80);
+    cpu->set_Z(val == 0);
+    cpu->set_N(val & 0x80);
 
     // Check if page boundary was crossed
-    if (page_crossed)
-    {
-        return 5;
-    }
-
-    return 4;
+    return page_crossed ? 5 : 4;
 }
+
 
 // 0xBE
 uint8_t Instructions::ldx_abs_y(CPU* cpu, Memory* memory)
