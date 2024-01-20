@@ -37,6 +37,19 @@ PPU::PPU() : cycles(0), scanline(0), frame(0), total_cycles(7), control(0), mask
     this->vram_address = 0;
 }
 
+void PPU::add_cycles(int cycles)
+{
+	this->cycles += cycles;
+	this->total_cycles += cycles / 3;
+
+    // account for > 341 cycles
+    while (this->cycles >= SCANLINE_CYCLES)
+    {
+		this->cycles -= SCANLINE_CYCLES;
+		this->scanline++;
+	}
+}
+
 PPU::~PPU()
 {
     delete[] vram;
@@ -310,6 +323,11 @@ void PPU::load(uint8_t* rom, uint32_t size)
 void PPU::set_vblank_flag()
 {
 	this->status |= 0x80;
+}
+
+void PPU::write_oam_data(uint16_t address, uint8_t value)
+{
+	this->oam[address] = value;
 }
 
 void PPU::step(int cycles)

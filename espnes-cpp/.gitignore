@@ -8,3 +8,4 @@ imgui.ini
 dk_log.debug
 nestest_log.debug
 nestest_log_nmi.debug
+enc_temp_folder

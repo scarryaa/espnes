@@ -17,6 +17,7 @@ public:
     CPU(Memory *memory);
     ~CPU();
 
+    void add_cycles(int cycles);
     int get_cycles();
     long get_total_cycles();
     int run();

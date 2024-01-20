@@ -182,6 +182,11 @@ void CPU::reset()
     total_cycles = 7;
 }
 
+void CPU::add_cycles(int cycles)
+{
+	total_cycles += cycles;
+}
+
 int CPU::get_cycles()
 {
     return total_cycles;

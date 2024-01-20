@@ -119,6 +119,19 @@ void Memory::write(uint16_t address, uint8_t value)
     // Write to APU
     else if (address >= 0x4000 && address <= 0x4017)
     {
+        // OAM DMA
+        if (address == 0x4014)
+        {
+            uint16_t dma_address = value * 0x100;
+
+            for (int i = 0; i < 256; i++)
+            {
+                uint8_t byte = read(dma_address + i);
+                ppu->write_oam_data(i, byte);
+            }
+
+            emulator->set_dma_triggered(true);
+		}
         // Controller 1
         if (address == 0x4016)
         {

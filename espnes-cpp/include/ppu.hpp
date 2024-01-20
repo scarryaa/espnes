@@ -34,6 +34,8 @@ public:
     void draw_palette();
     void set_vblank_flag();
     long get_total_cycles();
+    void write_oam_data(uint16_t address, uint8_t value);
+    void add_cycles(int cycles);
 
 private:
     InterruptCallback interruptCallback;

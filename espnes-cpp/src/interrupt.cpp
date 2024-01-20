@@ -29,16 +29,16 @@ void Interrupt::handle_nmi(CPU* cpu, Memory* memory)
     uint8_t p = cpu->get_P() | 0x20;
 
     // Push high byte of PC
-    cpu->set_SP(cpu->get_SP() - 1);
     memory->write(0x0100 + cpu->get_SP(), (pc >> 8) & 0xFF);
+    cpu->set_SP(cpu->get_SP() - 1);
 
     // Push low byte of PC
-    cpu->set_SP(cpu->get_SP() - 1);
     memory->write(0x0100 + cpu->get_SP(), pc & 0xFF);
+    cpu->set_SP(cpu->get_SP() - 1);
 
     // Push processor status (P) with a constant
-    cpu->set_SP(cpu->get_SP() - 1);
     memory->write(0x0100 + cpu->get_SP(), p);
+    cpu->set_SP(cpu->get_SP() - 1);
 
     // Set PC to NMI vector
     cpu->set_PC(memory->read(CPU::NMI_VECTOR) | (memory->read(CPU::NMI_VECTOR + 1) << 8));
@@ -47,18 +47,20 @@ void Interrupt::handle_nmi(CPU* cpu, Memory* memory)
 
 void Interrupt::handle_brk(CPU* cpu, Memory* memory)
 {
+    uint16_t pc = cpu->get_PC() + 1;
+
     // Disable interrupts
     cpu->set_P(cpu->get_P() | CPU::FLAG_INTERRUPT_DISABLE);
 
     // Push PC onto stack
+    memory->write(0x0100 + cpu->get_SP(), (pc >> 8) & 0xFF);
     cpu->set_SP(cpu->get_SP() - 1);
-    memory->write(0x0100 + cpu->get_SP(), (cpu->get_PC() >> 8) & 0xFF);
+    memory->write(0x0100 + cpu->get_SP(), pc & 0xFF);
     cpu->set_SP(cpu->get_SP() - 1);
-    memory->write(0x0100 + cpu->get_SP(), cpu->get_PC() & 0xFF);
 
     // Push P onto stack with B and U flags set
-    cpu->set_SP(cpu->get_SP() - 1);
     memory->write(0x0100 + cpu->get_SP(), cpu->get_P() | CPU::FLAG_BREAK | CPU::FLAG_UNUSED);
+    cpu->set_SP(cpu->get_SP() - 1);
 
     // Set PC to IRQ
     cpu->set_PC(memory->read(CPU::IRQ_VECTOR) | (memory->read(CPU::IRQ_VECTOR + 1) << 8));
@@ -74,14 +76,14 @@ void Interrupt::handle_irq(CPU* cpu, Memory* memory)
         cpu->set_P(cpu->get_P() | CPU::FLAG_INTERRUPT_DISABLE);
 
         // Push PC onto stack
-        cpu->set_SP(cpu->get_SP() - 1);
         memory->write(0x0100 + cpu->get_SP(), (cpu->get_PC() >> 8) & 0xFF);
         cpu->set_SP(cpu->get_SP() - 1);
         memory->write(0x0100 + cpu->get_SP(), cpu->get_PC() & 0xFF);
+        cpu->set_SP(cpu->get_SP() - 1);
 
         // Push P onto stack with B unset
-        cpu->set_SP(cpu->get_SP() - 1);
         memory->write(0x0100 + cpu->get_SP(), cpu->get_P() & ~CPU::FLAG_BREAK);
+        cpu->set_SP(cpu->get_SP() - 1);
 
         // Set PC to IRQ vector
         cpu->set_PC(memory->read(CPU::IRQ_VECTOR) | (memory->read(CPU::IRQ_VECTOR + 1) << 8));

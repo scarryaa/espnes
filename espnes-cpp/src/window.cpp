@@ -264,6 +264,32 @@ void Window::render_disassembly(Emulator* emulator)
     ImGui::End();
 }
 
+void Window::render_cpu_memory_view(Emulator* emulator)
+{
+    Memory* memory = emulator->get_memory();
+
+    ImGui::Begin("CPU Memory View");
+
+    const int bytesPerRow = 16;
+    const int totalLines = 0x10000 / bytesPerRow;
+
+    ImGui::BeginChild("MemoryScrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+    for (int line = 0; line < totalLines; ++line)
+    {
+        uint16_t addr = line * bytesPerRow;
+        ImGui::Text("%04X: ", addr);
+        for (int col = 0; col < bytesPerRow; ++col)
+        {
+            ImGui::SameLine();
+            ImGui::Text("%02X ", memory->read(addr + col));
+        }
+    }
+
+    ImGui::EndChild();
+    ImGui::End();
+}
+
 void Window::render_memory_view(Emulator* emulator)
 {
     PPU* ppu = emulator->get_PPU();
@@ -309,6 +335,7 @@ void Window::render(Emulator* emulator)
     this->render_CPU(emulator);
     this->render_memory_view(emulator);
     this->render_breakpoints(emulator);
+    this->render_cpu_memory_view(emulator);
 }
 
 void Window::render_PPU(Emulator* emulator)

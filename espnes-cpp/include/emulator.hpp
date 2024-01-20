@@ -23,6 +23,7 @@ public:
     Emulator();
     ~Emulator();
 
+    void set_dma_triggered(bool dma_triggered);
     void set_PC_to_reset_vector();
     void load_rom(const std::string &romPath);
     void run();
@@ -45,6 +46,7 @@ public:
     uint16_t get_PC();
     CPU *get_CPU();
     PPU *get_PPU();
+    Memory *get_memory();
     Disassembler get_disassembler();
 
 private:
@@ -59,6 +61,7 @@ private:
     Controller controller;
     Disassembler disassembler;
 
+    bool dma_triggered;
     bool quit;
     bool paused;
     uint16_t reset_vector;

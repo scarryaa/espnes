@@ -774,7 +774,8 @@ uint8_t Instructions::rol_abs_x(CPU* cpu, Memory* memory)
 uint8_t Instructions::rti_impl(CPU* cpu, Memory* memory)
 {
     // Pull P from stack
-    cpu->set_P(CPUHelpers::pop_from_stack8(cpu, memory));
+    uint8_t pulledP = CPUHelpers::pop_from_stack8(cpu, memory);
+    cpu->set_P(pulledP);
 
     // Pull PC from stack
     cpu->set_PC(CPUHelpers::pop_from_stack16(cpu, memory));
@@ -851,6 +852,10 @@ uint8_t Instructions::lsr_zpg(CPU* cpu, Memory* memory)
 // 0x48
 uint8_t Instructions::pha_impl(CPU* cpu, Memory* memory)
 {
+    if (cpu->get_PC() == 0xC860)
+    {
+        printf("PHA\n");
+    }
     // Push A onto stack
     CPUHelpers::push_to_stack8(cpu, memory, cpu->get_A());
 
@@ -1676,7 +1681,8 @@ uint8_t Instructions::bcc_rel(CPU* cpu, Memory* memory)
 {
     // Get relative address
     int8_t offset = AddressingModes::relative(cpu, memory);
-    uint16_t addr = cpu->get_PC() + offset;
+    uint16_t originalPC = cpu->get_PC();
+    uint16_t addr = originalPC + offset;
 
     // Check if carry flag is clear
     if (!cpu->get_C())
@@ -1685,7 +1691,7 @@ uint8_t Instructions::bcc_rel(CPU* cpu, Memory* memory)
         cpu->set_PC(addr);
 
         // Add cycles if page boundary is crossed
-        if ((cpu->get_PC() & 0xFF00) != (addr & 0xFF00))
+        if ((originalPC & 0xFF00) != (addr & 0xFF00))
         {
             return 4;
         }

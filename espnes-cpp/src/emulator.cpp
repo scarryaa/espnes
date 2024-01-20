@@ -12,9 +12,19 @@ Emulator::~Emulator()
 {
 }
 
+void Emulator::set_dma_triggered(bool dma_triggered)
+{
+	this->dma_triggered = dma_triggered;
+}
+
 uint16_t Emulator::get_PC()
 {
     return cpu.get_PC();
+}
+
+Memory* Emulator::get_memory()
+{
+	return &memory;
 }
 
 CPU* Emulator::get_CPU()
@@ -191,7 +201,7 @@ void Emulator::run()
             }
 
             //log cpu
-            //log_cpu();
+            log_cpu();
 
             uint8_t tmp_cycles = cpu.fetch_next_opcode_cycles();
             // if adding cycles would cause scanline 241 cycle 1 to be executed, set vblank flag
@@ -199,6 +209,24 @@ void Emulator::run()
             {
                 ppu.set_vblank_flag();
             }
+
+            // check for oam dma
+            if (this->dma_triggered)
+            {
+				this->dma_triggered = false;
+
+                // DMA takes 513 or 514 cycles
+                if (ppu.get_cycle() % 2 == 1)
+                {
+					cpu.add_cycles(514);
+					ppu.add_cycles(514 * 3);
+				}
+                else
+                {
+					cpu.add_cycles(513);
+					ppu.add_cycles(513 * 3);
+				}
+			}
 
             cycles = cpu.run();
 

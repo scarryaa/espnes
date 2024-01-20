@@ -20,6 +20,7 @@ public:
     ~Window();
 
     void render_memory_view(Emulator *emulator);
+    void render_cpu_memory_view(Emulator *emulator);
     bool poll_events();
     void render(Emulator *emulator);
     void post_render(uint8_t *frame_buffer);
